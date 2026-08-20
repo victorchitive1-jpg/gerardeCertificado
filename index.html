@@ -648,7 +648,13 @@
 
                         <div class="form-group">
                             <label>Comportamento</label>
-                            <input type="text" id="c_comportamento" placeholder="Ex: Bom ou FALSO">
+                            <select id="c_comportamento">
+                                <option value="Não Satisfatório">Não Satisfatório</option>
+                                <option value="Satisfatório">Satisfatório</option>
+                                <option value="Bom" selected>Bom</option>
+                                <option value="Muito Bom">Muito Bom</option>
+                                <option value="Excelente">Excelente</option>
+                            </select>
                         </div>
 
                         <div class="form-group">
@@ -835,7 +841,13 @@
 
                 <div class="form-group">
                     <label>Comportamento</label>
-                    <input type="text" id="in_comportamento" value="FALSO">
+                    <select id="in_comportamento">
+                        <option value="Não Satisfatório">Não Satisfatório</option>
+                        <option value="Satisfatório">Satisfatório</option>
+                        <option value="Bom" selected>Bom</option>
+                        <option value="Muito Bom">Muito Bom</option>
+                        <option value="Excelente">Excelente</option>
+                    </select>
                 </div>
 
                 <div class="form-group">
@@ -963,7 +975,7 @@
         </table>
 
         <div class="conclusao-text">
-            Com comportamento <span class="fill" id="out_comportamento">FALSO</span> e resultado <span class="fill" id="out_resultado">Não Admitido</span> por ser verdade, manda passar a Presente Certidão que assina e autentica com o carimbo a tinta em uso nesta Instituição do Ensino.
+            Com comportamento <span class="fill" id="out_comportamento">Bom</span> e resultado <span class="fill" id="out_resultado">Não Admitido</span> por ser verdade, manda passar a Presente Certidão que assina e autentica com o carimbo a tinta em uso nesta Instituição do Ensino.
         </div>
 
         <div class="location-date">
@@ -1216,7 +1228,7 @@
                 cs: document.getElementById('c_cs').value.trim(),
                 evo: document.getElementById('c_evo').value.trim(),
                 ef: document.getElementById('c_ef').value.trim(),
-                comportamento: document.getElementById('c_comportamento').value.trim(),
+                comportamento: document.getElementById('c_comportamento').value,
                 resultado: document.getElementById('c_resultado').value,
                 data_emissao: document.getElementById('c_data_emissao').value.trim(),
                 extraido: document.getElementById('c_extraido').value.trim(),
@@ -1266,7 +1278,7 @@
             document.getElementById('c_cs').value = a.cs || '';
             document.getElementById('c_evo').value = a.evo || '';
             document.getElementById('c_ef').value = a.ef || '';
-            document.getElementById('c_comportamento').value = a.comportamento || '';
+            document.getElementById('c_comportamento').value = a.comportamento || 'Bom';
             document.getElementById('c_resultado').value = a.resultado || 'Não Admitido';
             document.getElementById('c_data_emissao').value = a.data_emissao || '';
             document.getElementById('c_extraido').value = a.extraido || '';
@@ -1353,7 +1365,7 @@
                 </table>
 
                 <div class="conclusao-text">
-                    Com comportamento <span class="fill">${escapeHtml(a.comportamento || 'FALSO')}</span> e resultado <span class="fill">${escapeHtml(a.resultado)}</span> por ser verdade, manda passar a Presente Certidão que assina e autentica com o carimbo a tinta em uso nesta Instituição do Ensino.
+                    Com comportamento <span class="fill">${escapeHtml(a.comportamento || 'Bom')}</span> e resultado <span class="fill">${escapeHtml(a.resultado)}</span> por ser verdade, manda passar a Presente Certidão que assina e autentica com o carimbo a tinta em uso nesta Instituição do Ensino.
                 </div>
 
                 <div class="location-date">
@@ -1493,7 +1505,7 @@
                                 cs: getVal('ciências sociais', 'ciencias sociais', 'cs') || '--',
                                 evo: getVal('educação visual', 'educacao visual', 'evo') || '--',
                                 ef: getVal('educação física', 'educacao fisica', 'ef') || '--',
-                                comportamento: getVal('comportamento') || 'FALSO',
+                                comportamento: getVal('comportamento') || 'Bom',
                                 resultado: getVal('resultado') || 'Não Admitido',
                                 ano: getVal('ano', 'ano lectivo') || '2025',
                                 data_emissao: getVal('data de emissão', 'data emissao', 'emissão') || '27 de Julho de 2026',
@@ -1573,7 +1585,7 @@
                 cs: document.getElementById('in_cs').value.trim(),
                 evo: document.getElementById('in_evo').value.trim(),
                 ef: document.getElementById('in_ef').value.trim(),
-                comportamento: document.getElementById('in_comportamento').value.trim(),
+                comportamento: document.getElementById('in_comportamento').value,
                 resultado: document.getElementById('in_resultado').value,
                 data_emissao: document.getElementById('in_data_emissao').value.trim(),
                 extraido: document.getElementById('in_extraido').value.trim(),
@@ -1624,7 +1636,7 @@
             document.getElementById('in_cs').value = a.cs || '';
             document.getElementById('in_evo').value = a.evo || '';
             document.getElementById('in_ef').value = a.ef || '';
-            document.getElementById('in_comportamento').value = a.comportamento || '';
+            document.getElementById('in_comportamento').value = a.comportamento || 'Bom';
             document.getElementById('in_resultado').value = a.resultado || 'Não Admitido';
             document.getElementById('in_data_emissao').value = a.data_emissao || '';
             document.getElementById('in_extraido').value = a.extraido || '';
@@ -1645,11 +1657,21 @@
             btn.addEventListener('click', () => switchTab(btn.dataset.tab));
         });
 
+        /* REGISTO DO SERVICE WORKER COM ATUALIZAÇÃO AUTOMÁTICA DA PÁGINA */
         if ('serviceWorker' in navigator) {
+            let refreshing = false;
+
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                if (!refreshing) {
+                    refreshing = true;
+                    window.location.reload();
+                }
+            });
+
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
-                    .then(reg => console.log('Service Worker registrado com sucesso!'))
-                    .catch(err => console.log('Erro ao registrar Service Worker:', err));
+                navigator.serviceWorker.register('./sw.js').then((reg) => {
+                    reg.update();
+                }).catch(err => console.log('Erro ao registrar Service Worker:', err));
             });
         }
 
