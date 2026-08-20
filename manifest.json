@@ -1,0 +1,17 @@
+{
+  "name": "Gerador de Certidões - EP Chitsongo",
+  "short_name": "Certidões",
+  "description": "Sistema de emissão de certidões de habilitações da Escola Primária de Chitsongo",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#003366",
+  "icons": [
+    {
+      "src": "Emblema.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
