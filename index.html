@@ -13,6 +13,9 @@
     <meta name="apple-mobile-web-app-title" content="Certidões">
     <link rel="apple-touch-icon" href="Emblema.svg">
 
+    <!-- Biblioteca para Leitura de Ficheiros Excel (SheetJS) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
     <style>
         /* Estilos Gerais da Página */
         * {
@@ -25,6 +28,32 @@
             margin: 0;
             padding: 20px;
             color: #1a1a1a;
+            position: relative;
+        }
+
+        /* Overlay de Drag and Drop */
+        .drop-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 51, 102, 0.85);
+            color: white;
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            font-family: Arial, sans-serif;
+            font-size: 24px;
+            font-weight: bold;
+            pointer-events: none;
+            border: 4px dashed #ffffff;
+        }
+
+        body.drag-over .drop-overlay {
+            display: flex;
         }
 
         /* Painel do Formulário (Oculto na Impressão) */
@@ -100,6 +129,9 @@
             cursor: pointer;
             font-size: 14px;
             font-family: Arial, sans-serif;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .btn-primary {
@@ -332,7 +364,7 @@
             font-weight: bold;
         }
 
-        /* Tabela de Notas Elegante e Profissional */
+        /* Tabela de Notas Elegante */
         .table-notas {
             width: 100%;
             border-collapse: collapse;
@@ -361,7 +393,7 @@
             background-color: #f8fafc;
         }
 
-        /* Centralização das notas em algarismos, por extenso e unidade */
+        /* Centralização das notas */
         .table-notas td.center,
         .table-notas td:nth-child(3) {
             text-align: center;
@@ -420,7 +452,7 @@
             display: none;
         }
 
-        /* Regras de Impressão Contínua */
+        /* Impressão */
         @media print {
             @page {
                 size: A4 portrait;
@@ -481,7 +513,11 @@
 </head>
 <body>
 
-    <!-- Lista de Sugestões de Qualidade para Educação Física -->
+    <!-- Overlay Visual para Drag & Drop -->
+    <div class="drop-overlay">
+        <span>📄 Solte o ficheiro Excel (.xlsx, .xls) ou JSON aqui para importar</span>
+    </div>
+
     <datalist id="opcoes_ef">
         <option value="Não satisfatório">
         <option value="Satisfatório">
@@ -493,7 +529,7 @@
     <!-- PAINEL DE CONTROLO / FORMULÁRIO -->
     <div class="no-print">
         <h2>SISTEMA DE EMISSÃO DE CERTIDÕES DE HABILITAÇÕES</h2>
-        <p style="font-size: 13px; color: #666;">Cadastre os alunos uma vez com todos os detalhes e emita as certidões em massa ou individualmente.</p>
+        <p style="font-size: 13px; color: #666;">Importe tabelas Excel ou cadastre os alunos. Arraste e solte o ficheiro em qualquer lugar desta tela.</p>
 
         <div class="tabs">
             <button type="button" class="tab-btn active" data-tab="cadastro">📋 Cadastro de Alunos</button>
@@ -507,8 +543,8 @@
                 <button type="button" class="btn btn-success" onclick="emitirEmMassa()">🖨️ Emitir Certidões em Massa</button>
                 <button type="button" class="btn btn-secondary" onclick="exportarJSON()">⬇️ Exportar Cadastro</button>
                 <label class="btn btn-secondary" style="cursor:pointer; margin-bottom:0;">
-                    ⬆️ Importar Cadastro
-                    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importarJSON(event)">
+                    📊 Importar Excel / JSON
+                    <input type="file" id="importFile" accept=".xlsx, .xls, .csv, .json" style="display:none" onchange="processarFicheiroEntrada(event)">
                 </label>
             </div>
 
@@ -692,7 +728,7 @@
                     <tbody id="tabelaAlunosBody"></tbody>
                 </table>
             </div>
-            <p id="cadastroVazio" class="cadastro-vazio">Nenhum aluno cadastrado ainda. Clique em "➕ Novo Aluno" para começar.</p>
+            <p id="cadastroVazio" class="cadastro-vazio">Nenhum aluno cadastrado ainda. Arraste uma planilha Excel para aqui ou clique em "➕ Novo Aluno".</p>
         </div>
 
         <!-- ABA: EMISSÃO INDIVIDUAL -->
@@ -1038,7 +1074,6 @@
             document.getElementById('out_ef_num').innerText = discEF.numDisp;
             document.getElementById('out_ef_ext').innerText = discEF.extenso;
 
-            // Cálculo Média
             let soma = 0;
             let qtd = 0;
 
@@ -1059,64 +1094,9 @@
             element.addEventListener('change', atualizar);
         });
 
-        /* CADASTRO DE ALUNOS E EMISSÃO EM MASSA */
+        /* CADASTRO DE ALUNOS E IMPORTAÇÃO */
         const STORAGE_KEY = 'alunos_chitsongo_v2';
-        let alunos = [
-            {
-                id: 'default_1',
-                nome: 'Adolvina Da Arcenia Maússe',
-                sexo: 'Feminino',
-                data_nasc: '15 de agosto de 2015',
-                naturalidade: '',
-                distrito: '',
-                provincia: '',
-                pai: '',
-                mae: 'Arcênia Maússe',
-                bairro: '',
-                morada: '',
-                lp: '--',
-                mat: '--',
-                cn: '--',
-                cs: '--',
-                evo: '--',
-                ef: '--',
-                comportamento: 'FALSO',
-                resultado: 'Não Admitido',
-                ano: '2025',
-                data_emissao: '27 de Julho de 2026',
-                extraido: 'Teresa Chivulele',
-                conferido: 'Paulo Sithole',
-                directora: 'Laurinda Alberto Zavale Langa',
-                carreira_directora: 'DN3'
-            },
-            {
-                id: 'default_2',
-                nome: 'Almena Dinis Mussuei',
-                sexo: 'Feminino',
-                data_nasc: '14 de novembro de 2013',
-                naturalidade: '',
-                distrito: '',
-                provincia: '',
-                pai: '',
-                mae: '',
-                bairro: '',
-                morada: '',
-                lp: '--',
-                mat: '--',
-                cn: '--',
-                cs: '--',
-                evo: '--',
-                ef: '--',
-                comportamento: 'FALSO',
-                resultado: 'Não Admitido',
-                ano: '2025',
-                data_emissao: '27 de Julho de 2026',
-                extraido: 'Teresa Chivulele',
-                conferido: 'Paulo Sithole',
-                directora: 'Laurinda Alberto Zavale Langa',
-                carreira_directora: 'DN3'
-            }
-        ];
+        let alunos = [];
         let editingId = null;
 
         function escapeHtml(str) {
@@ -1444,26 +1424,135 @@
             URL.revokeObjectURL(url);
         }
 
-        function importarJSON(event) {
+        /* --- PROCESSAMENTO DE FICHEIROS (EXCEL / JSON / DRAG & DROP) --- */
+        function processarFicheiroEntrada(event) {
             const file = event.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                try {
-                    const importados = JSON.parse(e.target.result);
-                    if (!Array.isArray(importados)) throw new Error('O ficheiro deve conter uma lista de alunos.');
-                    importados.forEach(a => { if (!a.id) a.id = gerarId(); });
-                    alunos = alunos.concat(importados);
-                    saveAlunos();
-                    renderTabela();
-                    alert(`${importados.length} aluno(s) importado(s) com sucesso.`);
-                } catch (err) {
-                    alert('Erro ao importar o ficheiro: ' + err.message);
-                }
-                event.target.value = '';
-            };
-            reader.readAsText(file);
+            if (file) lerFicheiro(file);
+            event.target.value = '';
         }
+
+        function lerFicheiro(file) {
+            const ext = file.name.split('.').pop().toLowerCase();
+            if (ext === 'json') {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const importados = JSON.parse(e.target.result);
+                        if (!Array.isArray(importados)) throw new Error('O ficheiro JSON deve conter uma lista.');
+                        importados.forEach(a => { if (!a.id) a.id = gerarId(); });
+                        alunos = alunos.concat(importados);
+                        saveAlunos();
+                        renderTabela();
+                        alert(`${importados.length} aluno(s) importado(s) com sucesso.`);
+                    } catch (err) {
+                        alert('Erro ao carregar JSON: ' + err.message);
+                    }
+                };
+                reader.readAsText(file);
+            } else if (['xlsx', 'xls', 'csv'].includes(ext)) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const data = new Uint8Array(e.target.result);
+                        const workbook = XLSX.read(data, { type: 'array' });
+                        const firstSheet = workbook.SheetNames[0];
+                        const rows = XLSX.utils.sheet_to_json(workbook.Sheets[firstSheet], { defval: "" });
+
+                        if (!rows.length) {
+                            alert('A planilha Excel está vazia!');
+                            return;
+                        }
+
+                        const novosAlunos = rows.map(r => {
+                            const getVal = (...keys) => {
+                                for (let k of keys) {
+                                    for (let rowKey in r) {
+                                        if (rowKey.toString().trim().toLowerCase() === k.trim().toLowerCase()) {
+                                            return String(r[rowKey]).trim();
+                                        }
+                                    }
+                                }
+                                return '';
+                            };
+
+                            return {
+                                id: gerarId(),
+                                nome: getVal('nome', 'nome completo', 'aluno', 'nome do aluno'),
+                                sexo: getVal('sexo', 'gênero', 'genero') || 'Feminino',
+                                data_nasc: getVal('data de nascimento', 'data nascimento', 'nascimento', 'data_nasc'),
+                                naturalidade: getVal('naturalidade', 'natural'),
+                                distrito: getVal('distrito'),
+                                provincia: getVal('província', 'provincia'),
+                                pai: getVal('pai', 'nome do pai'),
+                                mae: getVal('mãe', 'mae', 'nome da mãe'),
+                                bairro: getVal('bairro'),
+                                morada: getVal('morada', 'endereço'),
+                                lp: getVal('português', 'portugues', 'língua portuguesa', 'lp') || '--',
+                                mat: getVal('matemática', 'matematica', 'mat') || '--',
+                                cn: getVal('ciências naturais', 'ciencias naturais', 'cn') || '--',
+                                cs: getVal('ciências sociais', 'ciencias sociais', 'cs') || '--',
+                                evo: getVal('educação visual', 'educacao visual', 'evo') || '--',
+                                ef: getVal('educação física', 'educacao fisica', 'ef') || '--',
+                                comportamento: getVal('comportamento') || 'FALSO',
+                                resultado: getVal('resultado') || 'Não Admitido',
+                                ano: getVal('ano', 'ano lectivo') || '2025',
+                                data_emissao: getVal('data de emissão', 'data emissao', 'emissão') || '27 de Julho de 2026',
+                                extraido: getVal('extraído por', 'extraido por', 'extraido') || 'Teresa Chivulele',
+                                conferido: getVal('conferido por', 'conferido') || 'Paulo Sithole',
+                                directora: getVal('directora', 'directora da escola') || 'Laurinda Alberto Zavale Langa',
+                                carreira_directora: getVal('carreira', 'carreira directora') || 'DN3'
+                            };
+                        }).filter(a => a.nome !== '');
+
+                        if (!novosAlunos.length) {
+                            alert('Nenhum aluno válido encontrado na planilha. Certifique-se de que a coluna se chama "Nome" ou "Nome Completo".');
+                            return;
+                        }
+
+                        alunos = alunos.concat(novosAlunos);
+                        saveAlunos();
+                        renderTabela();
+                        alert(`${novosAlunos.length} aluno(s) importado(s) do Excel com sucesso!`);
+                    } catch (err) {
+                        alert('Erro ao ler a planilha Excel: ' + err.message);
+                    }
+                };
+                reader.readAsArrayBuffer(file);
+            } else {
+                alert('Formato não suportado. Por favor use um ficheiro Excel (.xlsx, .xls, .csv) ou JSON.');
+            }
+        }
+
+        /* CONFIGURAÇÃO DRAG & DROP (ARRASTAR E LARGAR) */
+        let dragCounter = 0;
+
+        window.addEventListener('dragenter', (e) => {
+            e.preventDefault();
+            dragCounter++;
+            document.body.classList.add('drag-over');
+        });
+
+        window.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            dragCounter--;
+            if (dragCounter === 0) {
+                document.body.classList.remove('drag-over');
+            }
+        });
+
+        window.addEventListener('dragover', (e) => {
+            e.preventDefault();
+        });
+
+        window.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dragCounter = 0;
+            document.body.classList.remove('drag-over');
+            
+            if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                lerFicheiro(e.dataTransfer.files[0]);
+            }
+        });
 
         function guardarIndividualNoCadastro() {
             const dados = {
