@@ -1,4 +1,4 @@
-const CACHE_NAME = 'chitsongo-v2.1'; // Altere apenas este valor a cada nova atualização
+const CACHE_NAME = 'chitsongo-v3.0'; // Altere apenas este valor a cada nova atualização
 
 const ASSETS = [
   './',
