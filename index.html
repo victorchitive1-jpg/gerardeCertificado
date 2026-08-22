@@ -161,6 +161,15 @@
             background-color: #14602f;
         }
 
+        .btn-danger {
+            background-color: #b22234;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #8b1a1e;
+        }
+
         /* Abas */
         .tabs {
             display: flex;
@@ -196,6 +205,36 @@
             flex-wrap: wrap;
             gap: 10px;
             margin-bottom: 18px;
+            align-items: center;
+        }
+
+        .ano-selector {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-left: auto;
+            font-family: Arial, sans-serif;
+        }
+
+        .ano-selector label {
+            font-weight: bold;
+            font-size: 13px;
+            color: #444;
+        }
+
+        .ano-selector select {
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: Arial, sans-serif;
+            background-color: white;
+            cursor: pointer;
+        }
+
+        .ano-selector .btn {
+            padding: 8px 15px;
+            font-size: 13px;
         }
 
         .form-cadastro-panel {
@@ -291,6 +330,15 @@
             margin-bottom: 18px;
             width: 100%;
             max-width: 420px;
+        }
+
+        .stats-badge {
+            background: #e8edf3;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            color: #003366;
+            font-family: Arial, sans-serif;
         }
 
         /* Folha A4 da Certidão */
@@ -452,6 +500,38 @@
             display: none;
         }
 
+        /* Toast de Notificação */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #003366;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            z-index: 10000;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .toast.error {
+            background: #b22234;
+        }
+
+        .toast.success {
+            background: #1b7a3d;
+        }
+
         /* Impressão */
         @media print {
             @page {
@@ -509,6 +589,61 @@
                 border-color: #000 !important;
             }
         }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .no-print {
+                padding: 15px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .cadastro-toolbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .ano-selector {
+                margin-left: 0;
+                flex-wrap: wrap;
+            }
+
+            .btn {
+                padding: 8px 15px;
+                font-size: 12px;
+                justify-content: center;
+            }
+
+            .certidao-page {
+                width: 100%;
+                padding: 15mm 10mm;
+                min-height: auto;
+            }
+
+            .tabs {
+                flex-wrap: wrap;
+            }
+
+            .tab-btn {
+                font-size: 12px;
+                padding: 8px 12px;
+            }
+        }
+
+        @media print and (max-width: 768px) {
+            .certidao-page {
+                width: 210mm;
+                padding: 15mm 20mm;
+                min-height: 297mm;
+            }
+        }
     </style>
 </head>
 <body>
@@ -526,6 +661,9 @@
         <option value="Excelente">
     </datalist>
 
+    <!-- Toast para Notificações -->
+    <div id="toast" class="toast"></div>
+
     <!-- PAINEL DE CONTROLO / FORMULÁRIO -->
     <div class="no-print">
         <h2>SISTEMA DE EMISSÃO DE CERTIDÕES DE HABILITAÇÕES</h2>
@@ -534,6 +672,7 @@
         <div class="tabs">
             <button type="button" class="tab-btn active" data-tab="cadastro">📋 Cadastro de Alunos</button>
             <button type="button" class="tab-btn" data-tab="individual">🖨️ Emissão Individual</button>
+            <button type="button" class="tab-btn" data-tab="gestao-anos">📅 Gestão de Anos</button>
         </div>
 
         <!-- ABA: CADASTRO DE ALUNOS -->
@@ -546,17 +685,25 @@
                     📊 Importar Excel / JSON
                     <input type="file" id="importFile" accept=".xlsx, .xls, .csv, .json" style="display:none" onchange="processarFicheiroEntrada(event)">
                 </label>
+                
+                <div class="ano-selector">
+                    <label for="filtroAno">📅 Ano Lectivo:</label>
+                    <select id="filtroAno" onchange="filtrarPorAno()">
+                        <option value="todos">Todos os Anos</option>
+                    </select>
+                    <span class="stats-badge" id="contagemAlunos">0 alunos</span>
+                </div>
             </div>
 
             <div id="formCadastro" class="form-cadastro-panel" style="display:none;">
                 <h3 id="formCadastroTitulo">Novo Aluno</h3>
-                <form id="alunoForm">
+                <form id="alunoForm" onsubmit="salvarAluno(event)">
                     <div class="form-grid">
                         <div class="section-title">Dados Pessoais do Aluno</div>
 
                         <div class="form-group">
-                            <label>Nome Completo</label>
-                            <input type="text" id="c_nome">
+                            <label>Nome Completo *</label>
+                            <input type="text" id="c_nome" required>
                         </div>
 
                         <div class="form-group">
@@ -608,8 +755,10 @@
                         </div>
 
                         <div class="form-group">
-                            <label>Ano Lectivo</label>
-                            <input type="text" id="c_ano" value="2025">
+                            <label>Ano Lectivo *</label>
+                            <select id="c_ano" required>
+                                <!-- Opções serão preenchidas dinamicamente -->
+                            </select>
                         </div>
 
                         <div class="section-title">Notas das Disciplinas</div>
@@ -650,1035 +799,1015 @@
                             <label>Comportamento</label>
                             <select id="c_comportamento">
                                 <option value="Não Satisfatório">Não Satisfatório</option>
-                                <option value="Satisfatório">Satisfatório</option>
-                                <option value="Bom" selected>Bom</option>
+                                <option value="Satisfatório" selected>Satisfatório</option>
+                                <option value="Bom">Bom</option>
                                 <option value="Muito Bom">Muito Bom</option>
                                 <option value="Excelente">Excelente</option>
                             </select>
                         </div>
 
-                        <div class="form-group">
-                            <label>Resultado</label>
-                            <select id="c_resultado">
-                                <option value="Aprovada">Aprovada</option>
-                                <option value="Aprovado">Aprovado</option>
-                                <option value="Não Admitido">Não Admitido</option>
-                                <option value="Admitido">Admitido</option>
-                                <option value="Reprovada">Reprovada</option>
-                                <option value="Reprovado">Reprovado</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Data de Emissão</label>
-                            <input type="text" id="c_data_emissao" placeholder="Ex: 27 de Julho de 2026">
-                        </div>
-
-                        <div class="form-group">
-                            <label>Extraído Por</label>
-                            <input type="text" id="c_extraido">
-                        </div>
-
-                        <div class="form-group">
-                            <label>Conferido Por</label>
-                            <input type="text" id="c_conferido">
-                        </div>
-
-                        <div class="form-group">
-                            <label>Directora da Escola</label>
-                            <input type="text" id="c_directora">
-                        </div>
-
-                        <div class="form-group">
-                            <label>Carreira / Categoria</label>
-                            <input type="text" id="c_carreira_directora" placeholder="Ex: DN3">
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <div class="btn-container">
+                                <button type="button" class="btn btn-secondary" onclick="cancelarForm()">Cancelar</button>
+                                <button type="submit" class="btn btn-primary">💾 Salvar Aluno</button>
+                            </div>
                         </div>
                     </div>
                 </form>
-                <div class="btn-container">
-                    <button type="button" class="btn btn-secondary" onclick="fecharFormCadastro()">Cancelar</button>
-                    <button type="button" class="btn btn-primary" onclick="salvarAluno()">💾 Guardar Aluno</button>
-                </div>
             </div>
-
-            <p class="selecao-info">Desmarque a caixa para excluir o aluno da impressão em massa.</p>
 
             <div class="tabela-wrapper">
-                <table class="tabela-alunos">
+                <table class="tabela-alunos" id="tabelaAlunos">
                     <thead>
                         <tr>
-                            <th style="width:25px;"><input type="checkbox" id="selectAll" checked onchange="toggleSelectAll(this)"></th>
-                            <th>N</th>
-                            <th>Nome Completo</th>
-                            <th>Gênero</th>
-                            <th>Data de nascimento</th>
-                            <th>Natural</th>
-                            <th>Distrito</th>
-                            <th>Província</th>
-                            <th>Pai</th>
-                            <th>Mãe</th>
-                            <th>Bairro</th>
-                            <th>Morada</th>
-                            <th>Português</th>
-                            <th>Matemática</th>
-                            <th>C.Naturais</th>
-                            <th>C.Sociais</th>
-                            <th>E.Visual</th>
-                            <th>E.Física</th>
-                            <th>Comportamento</th>
+                            <th>#</th>
+                            <th>Nome</th>
+                            <th>Sexo</th>
+                            <th>Data Nasc.</th>
+                            <th>Naturalidade</th>
+                            <th>Ano</th>
                             <th>Média</th>
-                            <th>Resultado</th>
-                            <th style="text-align:center;">Ações</th>
+                            <th>Ações</th>
                         </tr>
                     </thead>
-                    <tbody id="tabelaAlunosBody"></tbody>
+                    <tbody id="corpoTabela">
+                        <tr><td colspan="8" class="cadastro-vazio">Nenhum aluno cadastrado. Clique em "Novo Aluno" para começar.</td></tr>
+                    </tbody>
                 </table>
             </div>
-            <p id="cadastroVazio" class="cadastro-vazio">Nenhum aluno cadastrado ainda. Arraste uma planilha Excel para aqui ou clique em "➕ Novo Aluno".</p>
         </div>
 
         <!-- ABA: EMISSÃO INDIVIDUAL -->
         <div id="tab-individual" class="tab-content" style="display:none;">
-        <select id="selectCarregarCadastro" class="select-cadastro" onchange="carregarDoCadastro()">
-            <option value="">— Carregar dados de um aluno do cadastro —</option>
-        </select>
-
-        <form id="certForm">
-            <div class="form-grid">
-                <div class="section-title">Dados Pessoais do Aluno</div>
-
-                <div class="form-group">
-                    <label>Nome Completo</label>
-                    <input type="text" id="in_nome" value="Adolvina Da Arcenia Maússe">
-                </div>
-
-                <div class="form-group">
-                    <label>Gênero</label>
-                    <select id="in_sexo">
-                        <option value="Feminino" selected>Feminino</option>
-                        <option value="Masculino">Masculino</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label>Data de Nascimento</label>
-                    <input type="text" id="in_data_nasc" value="15 de agosto de 2015">
-                </div>
-
-                <div class="form-group">
-                    <label>Naturalidade (Natural)</label>
-                    <input type="text" id="in_naturalidade" value="Mandlakazi">
-                </div>
-
-                <div class="form-group">
-                    <label>Distrito</label>
-                    <input type="text" id="in_distrito" value="Mandlakazi">
-                </div>
-
-                <div class="form-group">
-                    <label>Província</label>
-                    <input type="text" id="in_provincia" value="Gaza">
-                </div>
-
-                <div class="form-group">
-                    <label>Pai</label>
-                    <input type="text" id="in_pai" value="">
-                </div>
-
-                <div class="form-group">
-                    <label>Mãe</label>
-                    <input type="text" id="in_mae" value="Arcênia Maússe">
-                </div>
-
-                <div class="form-group">
-                    <label>Bairro</label>
-                    <input type="text" id="in_bairro" value="">
-                </div>
-
-                <div class="form-group">
-                    <label>Morada</label>
-                    <input type="text" id="in_morada" value="">
-                </div>
-
-                <div class="form-group">
-                    <label>Ano Lectivo</label>
-                    <input type="text" id="in_ano" value="2025">
-                </div>
-
-                <div class="section-title">Notas das Disciplinas</div>
-
-                <div class="form-group">
-                    <label>Português (0-20)</label>
-                    <input type="text" id="in_lp" value="--">
-                </div>
-
-                <div class="form-group">
-                    <label>Matemática (0-20)</label>
-                    <input type="text" id="in_mat" value="--">
-                </div>
-
-                <div class="form-group">
-                    <label>C. Naturais (0-20)</label>
-                    <input type="text" id="in_cn" value="--">
-                </div>
-
-                <div class="form-group">
-                    <label>C. Sociais (0-20)</label>
-                    <input type="text" id="in_cs" value="--">
-                </div>
-
-                <div class="form-group">
-                    <label>E. Visual (0-20)</label>
-                    <input type="text" id="in_evo" value="--">
-                </div>
-
-                <div class="form-group">
-                    <label>E. Física (Nota ou Qualidade)</label>
-                    <input type="text" id="in_ef" value="--" list="opcoes_ef">
-                </div>
-
-                <div class="section-title">Dados Finais e Validação</div>
-
-                <div class="form-group">
-                    <label>Comportamento</label>
-                    <select id="in_comportamento">
-                        <option value="Não Satisfatório">Não Satisfatório</option>
-                        <option value="Satisfatório">Satisfatório</option>
-                        <option value="Bom" selected>Bom</option>
-                        <option value="Muito Bom">Muito Bom</option>
-                        <option value="Excelente">Excelente</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label>Resultado</label>
-                    <select id="in_resultado">
-                        <option value="Não Admitido" selected>Não Admitido</option>
-                        <option value="Aprovada">Aprovada</option>
-                        <option value="Aprovado">Aprovado</option>
-                        <option value="Admitido">Admitido</option>
-                        <option value="Reprovada">Reprovada</option>
-                        <option value="Reprovado">Reprovado</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label>Data de Emissão</label>
-                    <input type="text" id="in_data_emissao" value="27 de Julho de 2026">
-                </div>
-
-                <div class="form-group">
-                    <label>Extraído Por</label>
-                    <input type="text" id="in_extraido" value="Teresa Chivulele">
-                </div>
-
-                <div class="form-group">
-                    <label>Conferido Por</label>
-                    <input type="text" id="in_conferido" value="Paulo Sithole">
-                </div>
-
-                <div class="form-group">
-                    <label>Directora da Escola</label>
-                    <input type="text" id="in_directora" value="Laurinda Alberto Zavale Langa">
-                </div>
-
-                <div class="form-group">
-                    <label>Carreira da Directora</label>
-                    <input type="text" id="in_carreira_directora" value="DN3">
-                </div>
+            <h3 style="font-family:Arial; color:#003366;">Emitir Certidão Individual</h3>
+            <p style="font-size:13px; color:#666;">Selecione um aluno e clique em "Emitir Certidão" para visualizar e imprimir.</p>
+            
+            <div style="margin: 15px 0;">
+                <label style="font-weight:bold; font-family:Arial; font-size:13px;">Selecione o Ano Lectivo:</label>
+                <select id="selectAnoIndividual" onchange="atualizarListaAlunosIndividual()" style="padding:8px; border:1px solid #ccc; border-radius:4px; font-size:14px; margin-left:10px; font-family:Arial;">
+                    <option value="todos">Todos os Anos</option>
+                </select>
             </div>
 
-            <div class="btn-container">
-                <button type="button" class="btn btn-secondary" onclick="guardarIndividualNoCadastro()">💾 Guardar no Cadastro</button>
-                <button type="button" class="btn btn-primary" onclick="window.print()">🖨️ Imprimir / Guardar em PDF</button>
+            <select id="selectAluno" class="select-cadastro" onchange="visualizarCertidao()">
+                <option value="">-- Selecione um aluno --</option>
+            </select>
+
+            <div style="margin-top: 15px;">
+                <button type="button" class="btn btn-primary" onclick="visualizarCertidao()">👁️ Visualizar Certidão</button>
+                <button type="button" class="btn btn-success" onclick="imprimirCertidaoIndividual()">🖨️ Imprimir Certidão</button>
             </div>
-        </form>
+
+            <div id="previewCertidao" style="margin-top: 25px; display:none;">
+                <div id="certidaoIndividualContainer"></div>
+            </div>
+        </div>
+
+        <!-- ABA: GESTÃO DE ANOS -->
+        <div id="tab-gestao-anos" class="tab-content" style="display:none;">
+            <h3 style="font-family:Arial; color:#003366;">📅 Gestão de Anos Lectivos</h3>
+            <p style="font-size:13px; color:#666;">Gerencie os anos lectivos disponíveis no sistema.</p>
+
+            <div style="display:flex; gap:10px; margin: 15px 0; flex-wrap:wrap;">
+                <input type="text" id="novoAno" placeholder="Ex: 2025" style="padding:8px; border:1px solid #ccc; border-radius:4px; font-size:14px; width:150px;">
+                <button type="button" class="btn btn-primary" onclick="adicionarAno()">➕ Adicionar Ano</button>
+            </div>
+
+            <div style="margin-top:15px;">
+                <h4 style="font-family:Arial; color:#444;">Anos Lectivos Activos:</h4>
+                <div id="listaAnos" style="display:flex; flex-wrap:wrap; gap:10px; margin-top:10px;"></div>
+            </div>
+
+            <div style="margin-top:20px; padding:15px; background:#f7f9fc; border-radius:8px; border:1px solid #dde3ec;">
+                <h4 style="font-family:Arial; color:#444; margin:0 0 10px 0;">Estatísticas por Ano</h4>
+                <div id="estatisticasAnos"></div>
+            </div>
         </div>
     </div>
-
-    <!-- CERTIDÃO (PRÉ-VISUALIZAÇÃO INDIVIDUAL) -->
-    <div id="individualPreviewWrapper">
-    <div class="certidao-page single-preview">
-        <div class="header">
-          <img src="Emblema.svg" class="emblem">
-          <div>
-            <h3>REPÚBLICA DE MOÇAMBIQUE</h3>
-            <h4>PROVÍNCIA DE GAZA</h4>
-            <h4>GOVERNO DO DISTRITO DE MANDLAKAZI</h4>
-            <h5>SERVIÇO DISTRITAL DE EDUCAÇÃO, JUVENTUDE E TECNOLOGIA</h5>
-            <h5>ESCOLA PRIMÁRIA DE CHITSONGO</h5>
-          </div>
-        </div>
-
-        <div class="doc-title">CERTIDÃO</div>
-
-        <div class="body-text">
-            <span class="fill bold-field" id="out_directora">Laurinda Alberto Zavale Langa</span>, Directora da Escola Primária de Chitsongo, certifica em cumprimento do despacho exarado em requerimento que fica arquivado na secretaria desta escola, que <span class="fill bold-field" id="out_nome">Adolvina Da Arcenia Maússe</span>, do sexo <span class="fill" id="out_sexo">Feminino</span>, nascido(a) em <span class="fill" id="out_naturalidade">Mandlakazi</span>, no dia <span class="fill" id="out_data_nasc">15 de agosto de 2015</span>, filho(a) de <span class="fill" id="out_pai">--</span> e de <span class="fill" id="out_mae">Arcênia Maússe</span>, Concluiu nesta Escola a 6ª classe do Ensino Primário no ano lectivo de <span class="fill" id="out_ano">2025</span> e obteve os seguintes resultados por disciplina:
-        </div>
-
-        <table class="table-notas">
-            <thead>
-                <tr>
-                    <th rowspan="2" style="vertical-align: middle; width: 45%;">Disciplina</th>
-                    <th colspan="2" style="width: 40%;">Notas</th>
-                    <th rowspan="2" style="vertical-align: middle; width: 15%;">Unidade</th>
-                </tr>
-                <tr>
-                    <th style="width: 15%;">Algarismos</th>
-                    <th style="width: 25%;">Extenso</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Língua portuguesa</td>
-                    <td class="center" id="out_lp_num">--</td>
-                    <td class="center" id="out_lp_ext">--</td>
-                    <td class="center">Valores</td>
-                </tr>
-                <tr>
-                    <td>Ciências Naturais</td>
-                    <td class="center" id="out_cn_num">--</td>
-                    <td class="center" id="out_cn_ext">--</td>
-                    <td class="center">Valores</td>
-                </tr>
-                <tr>
-                    <td>Matemática</td>
-                    <td class="center" id="out_mat_num">--</td>
-                    <td class="center" id="out_mat_ext">--</td>
-                    <td class="center">Valores</td>
-                </tr>
-                <tr>
-                    <td>Ciências Sociais</td>
-                    <td class="center" id="out_cs_num">--</td>
-                    <td class="center" id="out_cs_ext">--</td>
-                    <td class="center">Valores</td>
-                </tr>
-                <tr>
-                    <td>Educação Visual e Ofícios</td>
-                    <td class="center" id="out_evo_num">--</td>
-                    <td class="center" id="out_evo_ext">--</td>
-                    <td class="center">Valores</td>
-                </tr>
-                <tr>
-                    <td>Educação Física</td>
-                    <td class="center" id="out_ef_num">--</td>
-                    <td class="center" id="out_ef_ext">--</td>
-                    <td class="center">Valores</td>
-                </tr>
-                <tr class="media-row">
-                    <td>Média</td>
-                    <td class="center" id="out_media_num">0</td>
-                    <td class="center" id="out_media_ext">Zero</td>
-                    <td class="center">Valores</td>
-                </tr>
-            </tbody>
-        </table>
-
-        <div class="conclusao-text">
-            Com comportamento <span class="fill" id="out_comportamento">Bom</span> e resultado <span class="fill" id="out_resultado">Não Admitido</span> por ser verdade, manda passar a Presente Certidão que assina e autentica com o carimbo a tinta em uso nesta Instituição do Ensino.
-        </div>
-
-        <div class="location-date">
-            Chitsongo, aos <span id="out_data_emissao">27 de Julho de 2026</span>
-        </div>
-
-        <div class="signatures-grid">
-            <div class="signature-col">
-                Extraído por:<br>
-                <div class="signature-line"></div>
-                <span id="out_extraido">Teresa Chivulele</span>
-            </div>
-            <div class="signature-col">
-                Conferido Por:<br>
-                <div class="signature-line"></div>
-                <span id="out_conferido">Paulo Sithole</span>
-            </div>
-        </div>
-
-        <div class="directora-section">
-            A Directora da Escola<br>
-            <div class="signature-line" style="width: 50%;"></div>
-            <strong id="out_directora_sub">Laurinda Alberto Zavale Langa</strong><br>
-            <span style="font-size: 10pt;">/<span id="out_carreira_directora">DN3</span>/</span>
-        </div>
-    </div>
-    </div>
-
-    <!-- CONTAINER PARA EMISSÃO EM MASSA -->
-    <div id="massPrintContainer" class="mass-only"></div>
 
     <script>
-        const numeroPorExtenso = [
-            "Zero", "Um", "Dois", "Três", "Quatro", "Cinco", "Seis", "Sete", "Oito", "Nove", "Dez",
-            "Onze", "Doze", "Treze", "Catorze", "Quinze", "Dezasseis", "Dezassete", "Dezoito", "Dezanove", "Vinte"
-        ];
+        // ============================================================
+        // SISTEMA DE GESTÃO DE ANOS LECTIVOS
+        // ============================================================
 
-        function getExtenso(valor) {
-            let num = Math.round(parseFloat(valor));
-            if (!isNaN(num) && num >= 0 && num <= 20) {
-                return numeroPorExtenso[num];
-            }
-            return "--";
-        }
+        // Dados principais
+        let alunos = [];
+        let anosLectivos = [];
+        let editandoId = null;
+        let anoFiltro = 'todos';
 
-        function processarCampoValor(val) {
-            let raw = (val || '').toString().trim();
-            let num = parseFloat(raw);
-            if (!isNaN(num) && num >= 0 && num <= 20) {
-                return {
-                    isNumeric: true,
-                    numVal: num,
-                    numDisp: num.toString(),
-                    extenso: getExtenso(num)
-                };
-            }
-            return {
-                isNumeric: false,
-                numVal: 0,
-                numDisp: "--",
-                extenso: raw || "--"
-            };
-        }
+        // ============================================================
+        // INICIALIZAÇÃO
+        // ============================================================
 
-        function atualizar() {
-            document.getElementById('out_nome').innerText = document.getElementById('in_nome').value || '--';
-            document.getElementById('out_sexo').innerText = document.getElementById('in_sexo').value || '--';
-            document.getElementById('out_naturalidade').innerText = document.getElementById('in_naturalidade').value || '--';
-            document.getElementById('out_data_nasc').innerText = document.getElementById('in_data_nasc').value || '--';
-            document.getElementById('out_pai').innerText = document.getElementById('in_pai').value || '--';
-            document.getElementById('out_mae').innerText = document.getElementById('in_mae').value || '--';
-            document.getElementById('out_ano').innerText = document.getElementById('in_ano').value || '--';
-            document.getElementById('out_comportamento').innerText = document.getElementById('in_comportamento').value || '--';
-            document.getElementById('out_resultado').innerText = document.getElementById('in_resultado').value || '--';
-            document.getElementById('out_data_emissao').innerText = document.getElementById('in_data_emissao').value || '--';
-            document.getElementById('out_extraido').innerText = document.getElementById('in_extraido').value || '--';
-            document.getElementById('out_conferido').innerText = document.getElementById('in_conferido').value || '--';
-            
-            let directora = document.getElementById('in_directora').value || '--';
-            document.getElementById('out_directora').innerText = directora;
-            document.getElementById('out_directora_sub').innerText = directora;
-
-            let carreira = document.getElementById('in_carreira_directora').value || 'DN3';
-            document.getElementById('out_carreira_directora').innerText = carreira;
-
-            let discLP = processarCampoValor(document.getElementById('in_lp').value);
-            let discCN = processarCampoValor(document.getElementById('in_cn').value);
-            let discMAT = processarCampoValor(document.getElementById('in_mat').value);
-            let discCS = processarCampoValor(document.getElementById('in_cs').value);
-            let discEVO = processarCampoValor(document.getElementById('in_evo').value);
-            let discEF = processarCampoValor(document.getElementById('in_ef').value);
-
-            document.getElementById('out_lp_num').innerText = discLP.numDisp;
-            document.getElementById('out_lp_ext').innerText = discLP.extenso;
-
-            document.getElementById('out_cn_num').innerText = discCN.numDisp;
-            document.getElementById('out_cn_ext').innerText = discCN.extenso;
-
-            document.getElementById('out_mat_num').innerText = discMAT.numDisp;
-            document.getElementById('out_mat_ext').innerText = discMAT.extenso;
-
-            document.getElementById('out_cs_num').innerText = discCS.numDisp;
-            document.getElementById('out_cs_ext').innerText = discCS.extenso;
-
-            document.getElementById('out_evo_num').innerText = discEVO.numDisp;
-            document.getElementById('out_evo_ext').innerText = discEVO.extenso;
-
-            document.getElementById('out_ef_num').innerText = discEF.numDisp;
-            document.getElementById('out_ef_ext').innerText = discEF.extenso;
-
-            let soma = 0;
-            let qtd = 0;
-
-            [discLP, discCN, discMAT, discCS, discEVO, discEF].forEach(d => {
-                if (d.isNumeric) {
-                    soma += d.numVal;
-                    qtd++;
-                }
-            });
-
-            let media = qtd > 0 ? Math.round(soma / qtd) : 0;
-            document.getElementById('out_media_num').innerText = media;
-            document.getElementById('out_media_ext').innerText = getExtenso(media);
-        }
-
-        document.querySelectorAll('#certForm input, #certForm select').forEach(element => {
-            element.addEventListener('input', atualizar);
-            element.addEventListener('change', atualizar);
+        document.addEventListener('DOMContentLoaded', function() {
+            carregarDados();
+            inicializarAnos();
+            preencherSelectAnos();
+            atualizarTabela();
+            atualizarContagem();
+            configurarTabs();
+            configurarDragDrop();
+            configurarImportacao();
         });
 
-        /* CADASTRO DE ALUNOS E IMPORTAÇÃO */
-        const STORAGE_KEY = 'alunos_chitsongo_v2';
-        let alunos = [];
-        let editingId = null;
+        // ============================================================
+        // GESTÃO DE ANOS LECTIVOS
+        // ============================================================
 
-        function escapeHtml(str) {
-            const div = document.createElement('div');
-            div.textContent = str ?? '';
-            return div.innerHTML;
-        }
-
-        function gerarId() {
-            return 'a_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
-        }
-
-        function loadAlunos() {
-            try {
-                const raw = localStorage.getItem(STORAGE_KEY);
-                if (raw) {
-                    alunos = JSON.parse(raw);
+        function inicializarAnos() {
+            // Se não houver anos definidos, criar os padrão
+            if (anosLectivos.length === 0) {
+                const anoAtual = new Date().getFullYear();
+                for (let i = -2; i <= 2; i++) {
+                    anosLectivos.push(String(anoAtual + i));
                 }
-            } catch (e) {
-                console.error(e);
+                // Ordenar do mais recente para o mais antigo
+                anosLectivos.sort((a, b) => b - a);
+                salvarDados();
             }
         }
 
-        function saveAlunos() {
-            try {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(alunos));
-            } catch (e) {
-                alert('Erro ao guardar os dados no navegador.');
-            }
-        }
-
-        function calcMedia(a) {
-            let discList = [a.lp, a.mat, a.cn, a.cs, a.evo, a.ef];
-            let soma = 0;
-            let qtd = 0;
-            discList.forEach(v => {
-                let d = processarCampoValor(v);
-                if (d.isNumeric) {
-                    soma += d.numVal;
-                    qtd++;
-                }
-            });
-            return qtd > 0 ? Math.round(soma / qtd) : 0;
-        }
-
-        function renderTabela() {
-            const tbody = document.getElementById('tabelaAlunosBody');
-            tbody.innerHTML = '';
-            document.getElementById('cadastroVazio').style.display = alunos.length ? 'none' : 'block';
-            document.querySelector('.tabela-wrapper').style.display = alunos.length ? 'block' : 'none';
-            document.querySelector('.selecao-info').style.display = alunos.length ? 'block' : 'none';
-
-            alunos.forEach((a, index) => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td><input type="checkbox" class="rowCheck" data-id="${a.id}" checked></td>
-                    <td>${index + 1}</td>
-                    <td>${escapeHtml(a.nome)}</td>
-                    <td>${escapeHtml(a.sexo)}</td>
-                    <td>${escapeHtml(a.data_nasc)}</td>
-                    <td>${escapeHtml(a.naturalidade)}</td>
-                    <td>${escapeHtml(a.distrito)}</td>
-                    <td>${escapeHtml(a.provincia)}</td>
-                    <td>${escapeHtml(a.pai)}</td>
-                    <td>${escapeHtml(a.mae)}</td>
-                    <td>${escapeHtml(a.bairro)}</td>
-                    <td>${escapeHtml(a.morada)}</td>
-                    <td style="text-align:center;">${escapeHtml(a.lp || '--')}</td>
-                    <td style="text-align:center;">${escapeHtml(a.mat || '--')}</td>
-                    <td style="text-align:center;">${escapeHtml(a.cn || '--')}</td>
-                    <td style="text-align:center;">${escapeHtml(a.cs || '--')}</td>
-                    <td style="text-align:center;">${escapeHtml(a.evo || '--')}</td>
-                    <td style="text-align:center;">${escapeHtml(a.ef || '--')}</td>
-                    <td>${escapeHtml(a.comportamento)}</td>
-                    <td style="text-align:center; font-weight:bold;">${calcMedia(a)}</td>
-                    <td>${escapeHtml(a.resultado)}</td>
-                    <td class="acoes-col">
-                        <button type="button" class="btn-icon" title="Emitir certidão" onclick="emitirIndividualDoCadastro('${a.id}')">🖨️</button>
-                        <button type="button" class="btn-icon" title="Editar" onclick="editarAluno('${a.id}')">✏️</button>
-                        <button type="button" class="btn-icon" title="Excluir" onclick="excluirAluno('${a.id}')">🗑️</button>
-                    </td>`;
-                tbody.appendChild(tr);
-            });
-
-            popularSelectCadastro();
-        }
-
-        function abrirFormNovo() {
-            editingId = null;
-            document.getElementById('formCadastroTitulo').textContent = 'Novo Aluno';
-            document.getElementById('alunoForm').reset();
-            document.getElementById('formCadastro').style.display = 'block';
-            document.getElementById('formCadastro').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
-
-        function fecharFormCadastro() {
-            document.getElementById('formCadastro').style.display = 'none';
-            editingId = null;
-        }
-
-        function coletarFormAluno() {
-            return {
-                nome: document.getElementById('c_nome').value.trim(),
-                sexo: document.getElementById('c_sexo').value,
-                data_nasc: document.getElementById('c_data_nasc').value.trim(),
-                naturalidade: document.getElementById('c_naturalidade').value.trim(),
-                distrito: document.getElementById('c_distrito').value.trim(),
-                provincia: document.getElementById('c_provincia').value.trim(),
-                pai: document.getElementById('c_pai').value.trim(),
-                mae: document.getElementById('c_mae').value.trim(),
-                bairro: document.getElementById('c_bairro').value.trim(),
-                morada: document.getElementById('c_morada').value.trim(),
-                ano: document.getElementById('c_ano').value.trim(),
-                lp: document.getElementById('c_lp').value.trim(),
-                mat: document.getElementById('c_mat').value.trim(),
-                cn: document.getElementById('c_cn').value.trim(),
-                cs: document.getElementById('c_cs').value.trim(),
-                evo: document.getElementById('c_evo').value.trim(),
-                ef: document.getElementById('c_ef').value.trim(),
-                comportamento: document.getElementById('c_comportamento').value,
-                resultado: document.getElementById('c_resultado').value,
-                data_emissao: document.getElementById('c_data_emissao').value.trim(),
-                extraido: document.getElementById('c_extraido').value.trim(),
-                conferido: document.getElementById('c_conferido').value.trim(),
-                directora: document.getElementById('c_directora').value.trim(),
-                carreira_directora: document.getElementById('c_carreira_directora').value.trim(),
-            };
-        }
-
-        function salvarAluno() {
-            const dados = coletarFormAluno();
-            if (!dados.nome) {
-                alert('Indique o nome completo do aluno.');
+        function adicionarAno() {
+            const input = document.getElementById('novoAno');
+            const ano = input.value.trim();
+            
+            if (!ano) {
+                mostrarToast('Por favor, insira um ano lectivo.', 'error');
                 return;
             }
-            if (editingId) {
-                const idx = alunos.findIndex(a => a.id === editingId);
-                if (idx > -1) alunos[idx] = { ...alunos[idx], ...dados };
-            } else {
-                dados.id = gerarId();
-                alunos.push(dados);
+
+            if (!/^\d{4}$/.test(ano)) {
+                mostrarToast('Por favor, insira um ano válido (ex: 2025).', 'error');
+                return;
             }
-            saveAlunos();
-            renderTabela();
-            fecharFormCadastro();
+
+            if (anosLectivos.includes(ano)) {
+                mostrarToast('Este ano já está cadastrado.', 'error');
+                return;
+            }
+
+            anosLectivos.push(ano);
+            anosLectivos.sort((a, b) => b - a);
+            input.value = '';
+            salvarDados();
+            preencherSelectAnos();
+            atualizarListaAnos();
+            atualizarEstatisticas();
+            mostrarToast(`Ano ${ano} adicionado com sucesso!`, 'success');
+        }
+
+        function removerAno(ano) {
+            if (!confirm(`Tem certeza que deseja remover o ano ${ano}?`)) return;
+            
+            // Verificar se há alunos neste ano
+            const alunosNoAno = alunos.filter(a => a.ano === ano);
+            if (alunosNoAno.length > 0) {
+                if (!confirm(`Existem ${alunosNoAno.length} alunos neste ano. Remover o ano também removerá estes alunos. Continuar?`)) return;
+                alunos = alunos.filter(a => a.ano !== ano);
+            }
+
+            anosLectivos = anosLectivos.filter(a => a !== ano);
+            salvarDados();
+            preencherSelectAnos();
+            atualizarListaAnos();
+            atualizarEstatisticas();
+            atualizarTabela();
+            atualizarContagem();
+            mostrarToast(`Ano ${ano} removido.`, 'success');
+        }
+
+        function atualizarListaAnos() {
+            const container = document.getElementById('listaAnos');
+            if (anosLectivos.length === 0) {
+                container.innerHTML = '<p style="color:#888;">Nenhum ano lectivo cadastrado.</p>';
+                return;
+            }
+
+            container.innerHTML = anosLectivos.map(ano => `
+                <div style="background:white; padding:10px 15px; border-radius:6px; border:1px solid #dde3ec; display:flex; align-items:center; gap:10px;">
+                    <span style="font-weight:bold; font-family:Arial;">${ano}</span>
+                    <span class="stats-badge">${alunos.filter(a => a.ano === ano).length} alunos</span>
+                    <button type="button" class="btn btn-danger" onclick="removerAno('${ano}')" style="padding:4px 10px; font-size:12px;">✕</button>
+                </div>
+            `).join('');
+        }
+
+        function atualizarEstatisticas() {
+            const container = document.getElementById('estatisticasAnos');
+            if (anosLectivos.length === 0) {
+                container.innerHTML = '<p style="color:#888;">Nenhum dado disponível.</p>';
+                return;
+            }
+
+            const stats = anosLectivos.map(ano => {
+                const alunosAno = alunos.filter(a => a.ano === ano);
+                const aprovados = alunosAno.filter(a => calcularMedia(a) >= 10);
+                const reprovados = alunosAno.filter(a => calcularMedia(a) < 10 && calcularMedia(a) > 0);
+                const semNotas = alunosAno.filter(a => calcularMedia(a) === 0);
+                
+                return {
+                    ano,
+                    total: alunosAno.length,
+                    aprovados: aprovados.length,
+                    reprovados: reprovados.length,
+                    semNotas: semNotas.length
+                };
+            });
+
+            container.innerHTML = stats.map(s => `
+                <div style="background:white; padding:12px 15px; border-radius:6px; border:1px solid #dde3ec; margin-bottom:8px; display:flex; flex-wrap:wrap; gap:15px; align-items:center;">
+                    <span style="font-weight:bold; font-family:Arial; font-size:14px;">${s.ano}</span>
+                    <span style="font-size:13px;">📚 Total: ${s.total} alunos</span>
+                    <span style="font-size:13px; color:#1b7a3d;">✅ Aprovados: ${s.aprovados}</span>
+                    <span style="font-size:13px; color:#b22234;">❌ Reprovados: ${s.reprovados}</span>
+                    ${s.semNotas > 0 ? `<span style="font-size:13px; color:#888;">⚪ Sem notas: ${s.semNotas}</span>` : ''}
+                </div>
+            `).join('');
+        }
+
+        function preencherSelectAnos() {
+            const selects = ['c_ano', 'filtroAno', 'selectAnoIndividual'];
+            selects.forEach(id => {
+                const select = document.getElementById(id);
+                if (!select) return;
+                
+                const valorAtual = select.value;
+                select.innerHTML = '';
+                
+                if (id === 'filtroAno' || id === 'selectAnoIndividual') {
+                    const option = document.createElement('option');
+                    option.value = 'todos';
+                    option.textContent = 'Todos os Anos';
+                    select.appendChild(option);
+                }
+
+                anosLectivos.sort((a, b) => b - a);
+                anosLectivos.forEach(ano => {
+                    const option = document.createElement('option');
+                    option.value = ano;
+                    option.textContent = ano;
+                    select.appendChild(option);
+                });
+
+                if (valorAtual && anosLectivos.includes(valorAtual)) {
+                    select.value = valorAtual;
+                } else if (id === 'c_ano') {
+                    const anoAtual = String(new Date().getFullYear());
+                    if (anosLectivos.includes(anoAtual)) {
+                        select.value = anoAtual;
+                    } else if (anosLectivos.length > 0) {
+                        select.value = anosLectivos[0];
+                    }
+                }
+            });
+        }
+
+        // ============================================================
+        // FILTRO POR ANO
+        // ============================================================
+
+        function filtrarPorAno() {
+            const filtro = document.getElementById('filtroAno');
+            anoFiltro = filtro.value;
+            atualizarTabela();
+            atualizarContagem();
+        }
+
+        // ============================================================
+        // CRUD DE ALUNOS
+        // ============================================================
+
+        function abrirFormNovo(alunoData = null) {
+            const form = document.getElementById('formCadastro');
+            const titulo = document.getElementById('formCadastroTitulo');
+            const formElement = document.getElementById('alunoForm');
+            
+            form.style.display = 'block';
+            
+            if (alunoData) {
+                titulo.textContent = '✏️ Editar Aluno';
+                editandoId = alunoData.id;
+                // Preencher campos
+                document.getElementById('c_nome').value = alunoData.nome || '';
+                document.getElementById('c_sexo').value = alunoData.sexo || 'Feminino';
+                document.getElementById('c_data_nasc').value = alunoData.data_nasc || '';
+                document.getElementById('c_naturalidade').value = alunoData.naturalidade || '';
+                document.getElementById('c_distrito').value = alunoData.distrito || '';
+                document.getElementById('c_provincia').value = alunoData.provincia || '';
+                document.getElementById('c_pai').value = alunoData.pai || '';
+                document.getElementById('c_mae').value = alunoData.mae || '';
+                document.getElementById('c_bairro').value = alunoData.bairro || '';
+                document.getElementById('c_morada').value = alunoData.morada || '';
+                document.getElementById('c_ano').value = alunoData.ano || '';
+                document.getElementById('c_lp').value = alunoData.lp || '';
+                document.getElementById('c_mat').value = alunoData.mat || '';
+                document.getElementById('c_cn').value = alunoData.cn || '';
+                document.getElementById('c_cs').value = alunoData.cs || '';
+                document.getElementById('c_evo').value = alunoData.evo || '';
+                document.getElementById('c_ef').value = alunoData.ef || '';
+                document.getElementById('c_comportamento').value = alunoData.comportamento || 'Satisfatório';
+            } else {
+                titulo.textContent = '➕ Novo Aluno';
+                editandoId = null;
+                formElement.reset();
+                // Definir ano padrão
+                const anoAtual = String(new Date().getFullYear());
+                if (anosLectivos.includes(anoAtual)) {
+                    document.getElementById('c_ano').value = anoAtual;
+                } else if (anosLectivos.length > 0) {
+                    document.getElementById('c_ano').value = anosLectivos[0];
+                }
+            }
+            
+            form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        function cancelarForm() {
+            document.getElementById('formCadastro').style.display = 'none';
+            document.getElementById('alunoForm').reset();
+            editandoId = null;
+        }
+
+        function salvarAluno(event) {
+            event.preventDefault();
+            
+            const nome = document.getElementById('c_nome').value.trim();
+            if (!nome) {
+                mostrarToast('O nome do aluno é obrigatório.', 'error');
+                return;
+            }
+
+            const ano = document.getElementById('c_ano').value;
+            if (!ano) {
+                mostrarToast('Selecione um ano lectivo.', 'error');
+                return;
+            }
+
+            const aluno = {
+                id: editandoId || Date.now().toString(),
+                nome: nome,
+                sexo: document.getElementById('c_sexo').value,
+                data_nasc: document.getElementById('c_data_nasc').value,
+                naturalidade: document.getElementById('c_naturalidade').value,
+                distrito: document.getElementById('c_distrito').value,
+                provincia: document.getElementById('c_provincia').value,
+                pai: document.getElementById('c_pai').value,
+                mae: document.getElementById('c_mae').value,
+                bairro: document.getElementById('c_bairro').value,
+                morada: document.getElementById('c_morada').value,
+                ano: ano,
+                lp: document.getElementById('c_lp').value || '--',
+                mat: document.getElementById('c_mat').value || '--',
+                cn: document.getElementById('c_cn').value || '--',
+                cs: document.getElementById('c_cs').value || '--',
+                evo: document.getElementById('c_evo').value || '--',
+                ef: document.getElementById('c_ef').value || '--',
+                comportamento: document.getElementById('c_comportamento').value
+            };
+
+            if (editandoId) {
+                const index = alunos.findIndex(a => a.id === editandoId);
+                if (index !== -1) {
+                    alunos[index] = aluno;
+                    mostrarToast('Aluno actualizado com sucesso!', 'success');
+                }
+            } else {
+                alunos.push(aluno);
+                mostrarToast('Aluno cadastrado com sucesso!', 'success');
+            }
+
+            salvarDados();
+            cancelarForm();
+            atualizarTabela();
+            atualizarContagem();
+            atualizarEstatisticas();
+            preencherSelectAlunos();
         }
 
         function editarAluno(id) {
-            const a = alunos.find(x => x.id === id);
-            if (!a) return;
-            editingId = id;
-            document.getElementById('formCadastroTitulo').textContent = 'Editar Aluno';
-            document.getElementById('c_nome').value = a.nome || '';
-            document.getElementById('c_sexo').value = a.sexo || 'Feminino';
-            document.getElementById('c_data_nasc').value = a.data_nasc || '';
-            document.getElementById('c_naturalidade').value = a.naturalidade || '';
-            document.getElementById('c_distrito').value = a.distrito || '';
-            document.getElementById('c_provincia').value = a.provincia || '';
-            document.getElementById('c_pai').value = a.pai || '';
-            document.getElementById('c_mae').value = a.mae || '';
-            document.getElementById('c_bairro').value = a.bairro || '';
-            document.getElementById('c_morada').value = a.morada || '';
-            document.getElementById('c_ano').value = a.ano || '2025';
-            document.getElementById('c_lp').value = a.lp || '';
-            document.getElementById('c_mat').value = a.mat || '';
-            document.getElementById('c_cn').value = a.cn || '';
-            document.getElementById('c_cs').value = a.cs || '';
-            document.getElementById('c_evo').value = a.evo || '';
-            document.getElementById('c_ef').value = a.ef || '';
-            document.getElementById('c_comportamento').value = a.comportamento || 'Bom';
-            document.getElementById('c_resultado').value = a.resultado || 'Não Admitido';
-            document.getElementById('c_data_emissao').value = a.data_emissao || '';
-            document.getElementById('c_extraido').value = a.extraido || '';
-            document.getElementById('c_conferido').value = a.conferido || '';
-            document.getElementById('c_directora').value = a.directora || '';
-            document.getElementById('c_carreira_directora').value = a.carreira_directora || '';
-            document.getElementById('formCadastro').style.display = 'block';
-            document.getElementById('formCadastro').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            const aluno = alunos.find(a => a.id === id);
+            if (aluno) {
+                abrirFormNovo(aluno);
+            }
         }
 
         function excluirAluno(id) {
-            const a = alunos.find(x => x.id === id);
-            if (!a) return;
-            if (!confirm(`Excluir o aluno "${a.nome}" do cadastro?`)) return;
-            alunos = alunos.filter(x => x.id !== id);
-            saveAlunos();
-            renderTabela();
+            if (!confirm('Tem certeza que deseja excluir este aluno?')) return;
+            
+            alunos = alunos.filter(a => a.id !== id);
+            salvarDados();
+            atualizarTabela();
+            atualizarContagem();
+            atualizarEstatisticas();
+            preencherSelectAlunos();
+            mostrarToast('Aluno removido com sucesso.', 'success');
         }
 
-        function toggleSelectAll(checkbox) {
-            document.querySelectorAll('.rowCheck').forEach(cb => cb.checked = checkbox.checked);
-        }
+        // ============================================================
+        // CÁLCULO DE MÉDIA
+        // ============================================================
 
-        function construirCertidaoNode(a) {
-            const dLP = processarCampoValor(a.lp);
-            const dCN = processarCampoValor(a.cn);
-            const dMAT = processarCampoValor(a.mat);
-            const dCS = processarCampoValor(a.cs);
-            const dEVO = processarCampoValor(a.evo);
-            const dEF = processarCampoValor(a.ef);
-
-            let soma = 0;
-            let qtd = 0;
-            [dLP, dCN, dMAT, dCS, dEVO, dEF].forEach(d => {
-                if (d.isNumeric) {
-                    soma += d.numVal;
-                    qtd++;
+        function calcularMedia(aluno) {
+            const notas = [];
+            const disciplinas = ['lp', 'mat', 'cn', 'cs', 'evo'];
+            
+            disciplinas.forEach(disc => {
+                const val = parseFloat(aluno[disc]);
+                if (!isNaN(val) && val >= 0 && val <= 20) {
+                    notas.push(val);
                 }
             });
 
-            const media = qtd > 0 ? Math.round(soma / qtd) : 0;
+            if (notas.length === 0) return 0;
+            return parseFloat((notas.reduce((a, b) => a + b, 0) / notas.length).toFixed(1));
+        }
 
-            const div = document.createElement('div');
-            div.className = 'certidao-page';
-            div.innerHTML = `
-                <div class="header">
-                    <img src="Emblema.svg" class="emblem">
-                    <div>
-                        <h3>REPÚBLICA DE MOÇAMBIQUE</h3>
-                        <h4>PROVÍNCIA DE ${escapeHtml(a.provincia || 'GAZA')}</h4>
-                        <h4>GOVERNO DO DISTRITO DE ${escapeHtml(a.distrito || 'MANDLAKAZI')}</h4>
-                        <h5>SERVIÇO DISTRITAL DE EDUCAÇÃO, JUVENTUDE E TECNOLOGIA</h5>
-                        <h5>ESCOLA PRIMÁRIA DE CHITSONGO</h5>
-                    </div>
-                </div>
+        function formatarMedia(media) {
+            if (media === 0) return '--';
+            return media.toFixed(1);
+        }
 
-                <div class="doc-title">CERTIDÃO</div>
+        function getSituacao(media) {
+            if (media === 0) return 'Sem avaliação';
+            if (media >= 10) return 'Aprovado ✅';
+            return 'Reprovado ❌';
+        }
 
-                <div class="body-text">
-                    <span class="fill bold-field">${escapeHtml(a.directora || 'Laurinda Alberto Zavale Langa')}</span>, Directora da Escola Primária de Chitsongo, certifica em cumprimento do despacho exarado em requerimento que fica arquivado na secretaria desta escola, que <span class="fill bold-field">${escapeHtml(a.nome)}</span>, do sexo <span class="fill">${escapeHtml(a.sexo)}</span>, nascido(a) em <span class="fill">${escapeHtml(a.naturalidade || '--')}</span>, no dia <span class="fill">${escapeHtml(a.data_nasc || '--')}</span>, filho(a) de <span class="fill">${escapeHtml(a.pai || '--')}</span> e de <span class="fill">${escapeHtml(a.mae || '--')}</span>, Concluiu nesta Escola a 6ª classe do Ensino Primário no ano lectivo de <span class="fill">${escapeHtml(a.ano || '2025')}</span> e obteve os seguintes resultados por disciplina:
-                </div>
+        // ============================================================
+        // TABELA DE ALUNOS
+        // ============================================================
 
-                <table class="table-notas">
-                    <thead>
-                        <tr>
-                            <th rowspan="2" style="vertical-align: middle; width: 45%;">Disciplina</th>
-                            <th colspan="2" style="width: 40%;">Notas</th>
-                            <th rowspan="2" style="vertical-align: middle; width: 15%;">Unidade</th>
-                        </tr>
-                        <tr>
-                            <th style="width: 15%;">Algarismos</th>
-                            <th style="width: 25%;">Extenso</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr><td>Língua portuguesa</td><td class="center">${dLP.numDisp}</td><td class="center">${dLP.extenso}</td><td class="center">Valores</td></tr>
-                        <tr><td>Ciências Naturais</td><td class="center">${dCN.numDisp}</td><td class="center">${dCN.extenso}</td><td class="center">Valores</td></tr>
-                        <tr><td>Matemática</td><td class="center">${dMAT.numDisp}</td><td class="center">${dMAT.extenso}</td><td class="center">Valores</td></tr>
-                        <tr><td>Ciências Sociais</td><td class="center">${dCS.numDisp}</td><td class="center">${dCS.extenso}</td><td class="center">Valores</td></tr>
-                        <tr><td>Educação Visual e Ofícios</td><td class="center">${dEVO.numDisp}</td><td class="center">${dEVO.extenso}</td><td class="center">Valores</td></tr>
-                        <tr><td>Educação Física</td><td class="center">${dEF.numDisp}</td><td class="center">${escapeHtml(dEF.extenso)}</td><td class="center">Valores</td></tr>
-                        <tr class="media-row"><td>Média</td><td class="center">${media}</td><td class="center">${getExtenso(media)}</td><td class="center">Valores</td></tr>
-                    </tbody>
-                </table>
+        function atualizarTabela() {
+            const tbody = document.getElementById('corpoTabela');
+            
+            let alunosFiltrados = alunos;
+            if (anoFiltro !== 'todos') {
+                alunosFiltrados = alunos.filter(a => a.ano === anoFiltro);
+            }
 
-                <div class="conclusao-text">
-                    Com comportamento <span class="fill">${escapeHtml(a.comportamento || 'Bom')}</span> e resultado <span class="fill">${escapeHtml(a.resultado)}</span> por ser verdade, manda passar a Presente Certidão que assina e autentica com o carimbo a tinta em uso nesta Instituição do Ensino.
-                </div>
+            if (alunosFiltrados.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" class="cadastro-vazio">Nenhum aluno encontrado para o ano selecionado.</td></tr>`;
+                return;
+            }
 
-                <div class="location-date">
-                    Chitsongo, aos <span>${escapeHtml(a.data_emissao || '27 de Julho de 2026')}</span>
-                </div>
+            tbody.innerHTML = alunosFiltrados.map((aluno, index) => {
+                const media = calcularMedia(aluno);
+                return `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td><strong>${aluno.nome}</strong></td>
+                        <td>${aluno.sexo}</td>
+                        <td>${aluno.data_nasc || '--'}</td>
+                        <td>${aluno.naturalidade || '--'}</td>
+                        <td>${aluno.ano}</td>
+                        <td>${formatarMedia(media)}</td>
+                        <td class="acoes-col">
+                            <button type="button" class="btn-icon" onclick="editarAluno('${aluno.id}')" title="Editar">✏️</button>
+                            <button type="button" class="btn-icon" onclick="excluirAluno('${aluno.id}')" title="Excluir">🗑️</button>
+                            <button type="button" class="btn-icon" onclick="emitirIndividual('${aluno.id}')" title="Emitir Certidão">📄</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
 
-                <div class="signatures-grid">
-                    <div class="signature-col">
-                        Extraído por:<br>
-                        <div class="signature-line"></div>
-                        <span>${escapeHtml(a.extraido || 'Teresa Chivulele')}</span>
-                    </div>
-                    <div class="signature-col">
-                        Conferido Por:<br>
-                        <div class="signature-line"></div>
-                        <span>${escapeHtml(a.conferido || 'Paulo Sithole')}</span>
-                    </div>
-                </div>
+        function atualizarContagem() {
+            const contagem = document.getElementById('contagemAlunos');
+            let alunosFiltrados = alunos;
+            if (anoFiltro !== 'todos') {
+                alunosFiltrados = alunos.filter(a => a.ano === anoFiltro);
+            }
+            contagem.textContent = `${alunosFiltrados.length} alunos`;
+        }
 
-                <div class="directora-section">
-                    A Directora da Escola<br>
-                    <div class="signature-line" style="width: 50%;"></div>
-                    <strong>${escapeHtml(a.directora || 'Laurinda Alberto Zavale Langa')}</strong><br>
-                    <span style="font-size: 10pt;">/${escapeHtml(a.carreira_directora || 'DN3')}/</span>
-                </div>`;
-            return div;
+        // ============================================================
+        // EMISSÃO DE CERTIDÕES
+        // ============================================================
+
+        function emitirIndividual(id) {
+            const aluno = alunos.find(a => a.id === id);
+            if (!aluno) {
+                mostrarToast('Aluno não encontrado.', 'error');
+                return;
+            }
+
+            // Mudar para aba individual
+            document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
+            document.getElementById('tab-individual').style.display = 'block';
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.querySelector('[data-tab="individual"]').classList.add('active');
+
+            // Selecionar o aluno
+            const select = document.getElementById('selectAluno');
+            select.value = id;
+            visualizarCertidao();
+        }
+
+        function preencherSelectAlunos() {
+            const select = document.getElementById('selectAluno');
+            const valorAtual = select.value;
+            
+            select.innerHTML = '<option value="">-- Selecione um aluno --</option>';
+            
+            let alunosFiltrados = alunos;
+            const anoFiltroIndividual = document.getElementById('selectAnoIndividual').value;
+            if (anoFiltroIndividual !== 'todos') {
+                alunosFiltrados = alunos.filter(a => a.ano === anoFiltroIndividual);
+            }
+
+            alunosFiltrados.sort((a, b) => a.nome.localeCompare(b.nome));
+            
+            alunosFiltrados.forEach(aluno => {
+                const option = document.createElement('option');
+                option.value = aluno.id;
+                const media = calcularMedia(aluno);
+                option.textContent = `${aluno.nome} (${aluno.ano}) - Média: ${formatarMedia(media)}`;
+                select.appendChild(option);
+            });
+
+            if (valorAtual && alunos.find(a => a.id === valorAtual)) {
+                select.value = valorAtual;
+            }
+        }
+
+        function atualizarListaAlunosIndividual() {
+            preencherSelectAlunos();
+            document.getElementById('previewCertidao').style.display = 'none';
+        }
+
+        function visualizarCertidao() {
+            const select = document.getElementById('selectAluno');
+            const alunoId = select.value;
+            
+            if (!alunoId) {
+                document.getElementById('previewCertidao').style.display = 'none';
+                mostrarToast('Selecione um aluno.', 'error');
+                return;
+            }
+
+            const aluno = alunos.find(a => a.id === alunoId);
+            if (!aluno) {
+                mostrarToast('Aluno não encontrado.', 'error');
+                return;
+            }
+
+            const container = document.getElementById('certidaoIndividualContainer');
+            container.innerHTML = gerarCertidaoHTML(aluno);
+            document.getElementById('previewCertidao').style.display = 'block';
+        }
+
+        function imprimirCertidaoIndividual() {
+            const select = document.getElementById('selectAluno');
+            const alunoId = select.value;
+            
+            if (!alunoId) {
+                mostrarToast('Selecione um aluno.', 'error');
+                return;
+            }
+
+            const aluno = alunos.find(a => a.id === alunoId);
+            if (!aluno) {
+                mostrarToast('Aluno não encontrado.', 'error');
+                return;
+            }
+
+            const container = document.getElementById('certidaoIndividualContainer');
+            const certidaoHTML = gerarCertidaoHTML(aluno);
+            const win = window.open('', '_blank', 'width=800,height=600');
+            win.document.write(`
+                <!DOCTYPE html>
+                <html>
+                    <head><title>Certidão - ${aluno.nome}</title></head>
+                    <body style="margin:0;padding:0;">
+                        ${certidaoHTML}
+                        <script>
+                            window.onload = function() {
+                                window.print();
+                            };
+                        <\/script>
+                    </body>
+                </html>
+            `);
+            win.document.close();
         }
 
         function emitirEmMassa() {
-            const idsSelecionados = Array.from(document.querySelectorAll('.rowCheck:checked')).map(cb => cb.dataset.id);
-            const selecionados = alunos.filter(a => idsSelecionados.includes(a.id));
-            if (!selecionados.length) {
-                alert('Selecione pelo menos um aluno para emitir as certidões.');
+            let alunosFiltrados = alunos;
+            if (anoFiltro !== 'todos') {
+                alunosFiltrados = alunos.filter(a => a.ano === anoFiltro);
+            }
+
+            if (alunosFiltrados.length === 0) {
+                mostrarToast('Nenhum aluno encontrado para emitir certidões.', 'error');
                 return;
             }
-            const container = document.getElementById('massPrintContainer');
-            container.innerHTML = '';
-            selecionados.forEach(a => container.appendChild(construirCertidaoNode(a)));
-            document.body.classList.add('mode-mass');
-            window.print();
-        }
 
-        function emitirIndividualDoCadastro(id) {
-            const a = alunos.find(x => x.id === id);
-            if (!a) return;
-            const container = document.getElementById('massPrintContainer');
-            container.innerHTML = '';
-            container.appendChild(construirCertidaoNode(a));
-            document.body.classList.add('mode-mass');
-            window.print();
-        }
-
-        window.addEventListener('afterprint', () => {
-            document.body.classList.remove('mode-mass');
-        });
-
-        function exportarJSON() {
-            if (!alunos.length) {
-                alert('Não há alunos cadastrados para exportar.');
+            if (!confirm(`Deseja emitir certidões para ${alunosFiltrados.length} alunos do ano ${anoFiltro === 'todos' ? 'todos os anos' : anoFiltro}?`)) {
                 return;
             }
-            const blob = new Blob([JSON.stringify(alunos, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = 'cadastro_alunos_chitsongo.json';
-            link.click();
-            URL.revokeObjectURL(url);
+
+            const certidoesHTML = alunosFiltrados.map(aluno => gerarCertidaoHTML(aluno)).join('');
+            
+            const win = window.open('', '_blank', 'width=800,height=600');
+            win.document.write(`
+                <!DOCTYPE html>
+                <html>
+                    <head><title>Certidões em Massa</title></head>
+                    <body style="margin:0;padding:0;background:white;">
+                        <div class="mass-only">
+                            ${certidoesHTML}
+                        </div>
+                        <script>
+                            document.body.classList.add('mode-mass');
+                            window.onload = function() {
+                                window.print();
+                            };
+                        <\/script>
+                    </body>
+                </html>
+            `);
+            win.document.close();
+            
+            mostrarToast(`Emitindo ${alunosFiltrados.length} certidões...`, 'success');
         }
 
-        /* --- PROCESSAMENTO DE FICHEIROS (EXCEL / JSON / DRAG & DROP) --- */
+        // ============================================================
+        // GERADOR DE CERTIDÃO HTML
+        // ============================================================
+
+        function gerarCertidaoHTML(aluno) {
+            const media = calcularMedia(aluno);
+            const situacao = media >= 10 ? 'APROVADO' : media === 0 ? 'SEM AVALIAÇÃO' : 'REPROVADO';
+            const situacaoText = media >= 10 ? 'Aprovado' : media === 0 ? 'Sem avaliação' : 'Reprovado';
+            
+            // Formatação do gênero
+            const genero = aluno.sexo === 'Masculino' ? 'do' : 'da';
+            const pronome = aluno.sexo === 'Masculino' ? 'o' : 'a';
+            const alunoText = aluno.sexo === 'Masculino' ? 'Aluno' : 'Aluna';
+            
+            // Formatação da data
+            const hoje = new Date();
+            const dataAtual = hoje.toLocaleDateString('pt-PT', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            });
+
+            return `
+                <div class="certidao-page">
+                    <div class="header">
+                        <img src="Emblema.svg" alt="Emblema" class="emblem" onerror="this.style.display='none'">
+                        <h3>REPÚBLICA DE MOÇAMBIQUE</h3>
+                        <h4>ESCOLA PRIMÁRIA DE CHITSONGO</h4>
+                        <h5>DISTRITO DE MOCUBA - PROVÍNCIA DA ZAMBÉZIA</h5>
+                    </div>
+
+                    <div class="doc-title">CERTIDÃO DE HABILITAÇÕES</div>
+
+                    <p class="body-text">
+                        Certifica-se que <span class="bold-field">${aluno.nome}</span>, ${genero} sexo ${aluno.sexo.toLowerCase()}, 
+                        natural ${genero} ${aluno.naturalidade || '...'}, distrito de ${aluno.distrito || '...'}, 
+                        província de ${aluno.provincia || '...'}, filho${genero} de <span class="bold-field">${aluno.pai || '...'}</span> 
+                        e <span class="bold-field">${aluno.mae || '...'}</span>, residente no bairro ${aluno.bairro || '...'}, 
+                        morada ${aluno.morada || '...'}, frequentou ${pronome} presente estabelecimento de ensino no ano lectivo de 
+                        <span class="bold-field">${aluno.ano}</span>, tendo obtido as seguintes classificações:
+                    </p>
+
+                    <table class="table-notas">
+                        <thead>
+                            <tr>
+                                <th style="width:45%;">Disciplina</th>
+                                <th style="width:35%;">Classificação (0-20)</th>
+                                <th style="width:20%;">Mencão</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${[
+                                { sigla: 'lp', nome: 'Língua Portuguesa' },
+                                { sigla: 'mat', nome: 'Matemática' },
+                                { sigla: 'cn', nome: 'Ciências Naturais' },
+                                { sigla: 'cs', nome: 'Ciências Sociais' },
+                                { sigla: 'evo', nome: 'Educação Visual' },
+                                { sigla: 'ef', nome: 'Educação Física' }
+                            ].map(disc => {
+                                const valor = aluno[disc.sigla] || '--';
+                                const notaNum = parseFloat(valor);
+                                const mencão = !isNaN(notaNum) && notaNum >= 0 && notaNum <= 20 ? 
+                                    (notaNum >= 14 ? 'Bom' : notaNum >= 10 ? 'Suficiente' : 'Insuficiente') :
+                                    (typeof valor === 'string' && valor.includes('Satisfatório') ? 'Satisfatório' : '--');
+                                return `
+                                    <tr>
+                                        <td>${disc.nome}</td>
+                                        <td class="center">${valor}</td>
+                                        <td class="center">${mencão}</td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                            <tr class="media-row">
+                                <td><strong>MÉDIA FINAL</strong></td>
+                                <td class="center"><strong>${formatarMedia(media)}</strong></td>
+                                <td class="center"><strong>${situacao}</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <p class="conclusao-text">
+                        <strong>Conclusão:</strong> O(A) ${alunoText.toLowerCase()} <span class="bold-field">${aluno.nome}</span> 
+                        foi <span class="bold-field">${situacaoText}</span> com a média final de <span class="bold-field">${formatarMedia(media)}</span> valores, 
+                        tendo demonstrado comportamento <span class="bold-field">${aluno.comportamento || 'Satisfatório'}</span> 
+                        durante ${pronome} percurso escolar.
+                    </p>
+
+                    <div class="location-date">
+                        <strong>Chitsongo, ${dataAtual}</strong>
+                    </div>
+
+                    <div class="signatures-grid">
+                        <div class="signature-col">
+                            <div class="signature-line"></div>
+                            <div><strong>O(A) Secretário(a)</strong></div>
+                            <div style="font-size:9pt; color:#555;">(Assinatura e Carimbo)</div>
+                        </div>
+                        <div class="signature-col">
+                            <div class="signature-line"></div>
+                            <div><strong>A Directora</strong></div>
+                            <div style="font-size:9pt; color:#555;">(Assinatura e Carimbo)</div>
+                        </div>
+                    </div>
+
+                    <div class="directora-section">
+                        <div style="font-size:9pt; color:#555; margin-top: 5px;">
+                            Certidão emitida para os devidos fins escolares.
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // ============================================================
+        // IMPORTAÇÃO E EXPORTAÇÃO
+        // ============================================================
+
         function processarFicheiroEntrada(event) {
             const file = event.target.files[0];
-            if (file) lerFicheiro(file);
-            event.target.value = '';
-        }
+            if (!file) return;
 
-        function lerFicheiro(file) {
-            const ext = file.name.split('.').pop().toLowerCase();
-            if (ext === 'json') {
-                const reader = new FileReader();
-                reader.onload = (e) => {
+            const reader = new FileReader();
+            
+            if (file.name.endsWith('.json')) {
+                reader.onload = function(e) {
                     try {
-                        const importados = JSON.parse(e.target.result);
-                        if (!Array.isArray(importados)) throw new Error('O ficheiro JSON deve conter uma lista.');
-                        importados.forEach(a => { if (!a.id) a.id = gerarId(); });
-                        alunos = alunos.concat(importados);
-                        saveAlunos();
-                        renderTabela();
-                        alert(`${importados.length} aluno(s) importado(s) com sucesso.`);
+                        const data = JSON.parse(e.target.result);
+                        importarDados(data);
                     } catch (err) {
-                        alert('Erro ao carregar JSON: ' + err.message);
+                        mostrarToast('Erro ao ler o ficheiro JSON.', 'error');
                     }
                 };
                 reader.readAsText(file);
-            } else if (['xlsx', 'xls', 'csv'].includes(ext)) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
+            } else {
+                reader.onload = function(e) {
                     try {
                         const data = new Uint8Array(e.target.result);
                         const workbook = XLSX.read(data, { type: 'array' });
-                        const firstSheet = workbook.SheetNames[0];
-                        const rows = XLSX.utils.sheet_to_json(workbook.Sheets[firstSheet], { defval: "" });
-
-                        if (!rows.length) {
-                            alert('A planilha Excel está vazia!');
-                            return;
-                        }
-
-                        const novosAlunos = rows.map(r => {
-                            const getVal = (...keys) => {
-                                for (let k of keys) {
-                                    for (let rowKey in r) {
-                                        if (rowKey.toString().trim().toLowerCase() === k.trim().toLowerCase()) {
-                                            return String(r[rowKey]).trim();
-                                        }
-                                    }
-                                }
-                                return '';
-                            };
-
-                            return {
-                                id: gerarId(),
-                                nome: getVal('nome', 'nome completo', 'aluno', 'nome do aluno'),
-                                sexo: getVal('sexo', 'gênero', 'genero') || 'Feminino',
-                                data_nasc: getVal('data de nascimento', 'data nascimento', 'nascimento', 'data_nasc'),
-                                naturalidade: getVal('naturalidade', 'natural'),
-                                distrito: getVal('distrito'),
-                                provincia: getVal('província', 'provincia'),
-                                pai: getVal('pai', 'nome do pai'),
-                                mae: getVal('mãe', 'mae', 'nome da mãe'),
-                                bairro: getVal('bairro'),
-                                morada: getVal('morada', 'endereço'),
-                                lp: getVal('português', 'portugues', 'língua portuguesa', 'lp') || '--',
-                                mat: getVal('matemática', 'matematica', 'mat') || '--',
-                                cn: getVal('ciências naturais', 'ciencias naturais', 'cn') || '--',
-                                cs: getVal('ciências sociais', 'ciencias sociais', 'cs') || '--',
-                                evo: getVal('educação visual', 'educacao visual', 'evo') || '--',
-                                ef: getVal('educação física', 'educacao fisica', 'ef') || '--',
-                                comportamento: getVal('comportamento') || 'Bom',
-                                resultado: getVal('resultado') || 'Não Admitido',
-                                ano: getVal('ano', 'ano lectivo') || '2025',
-                                data_emissao: getVal('data de emissão', 'data emissao', 'emissão') || '27 de Julho de 2026',
-                                extraido: getVal('extraído por', 'extraido por', 'extraido') || 'Teresa Chivulele',
-                                conferido: getVal('conferido por', 'conferido') || 'Paulo Sithole',
-                                directora: getVal('directora', 'directora da escola') || 'Laurinda Alberto Zavale Langa',
-                                carreira_directora: getVal('carreira', 'carreira directora') || 'DN3'
-                            };
-                        }).filter(a => a.nome !== '');
-
-                        if (!novosAlunos.length) {
-                            alert('Nenhum aluno válido encontrado na planilha. Certifique-se de que a coluna se chama "Nome" ou "Nome Completo".');
-                            return;
-                        }
-
-                        alunos = alunos.concat(novosAlunos);
-                        saveAlunos();
-                        renderTabela();
-                        alert(`${novosAlunos.length} aluno(s) importado(s) do Excel com sucesso!`);
+                        const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                        const jsonData = XLSX.utils.sheet_to_json(firstSheet);
+                        importarExcel(jsonData);
                     } catch (err) {
-                        alert('Erro ao ler a planilha Excel: ' + err.message);
+                        mostrarToast('Erro ao ler o ficheiro Excel.', 'error');
                     }
                 };
                 reader.readAsArrayBuffer(file);
+            }
+            
+            event.target.value = '';
+        }
+
+        function importarDados(data) {
+            if (data.alunos && Array.isArray(data.alunos)) {
+                // Adicionar IDs se não existirem
+                data.alunos.forEach(aluno => {
+                    if (!aluno.id) aluno.id = Date.now().toString() + Math.random().toString(36).substr(2, 5);
+                });
+                alunos = alunos.concat(data.alunos);
+                salvarDados();
+                atualizarTabela();
+                atualizarContagem();
+                atualizarEstatisticas();
+                preencherSelectAlunos();
+                mostrarToast(`${data.alunos.length} alunos importados com sucesso!`, 'success');
             } else {
-                alert('Formato não suportado. Por favor use um ficheiro Excel (.xlsx, .xls, .csv) ou JSON.');
+                mostrarToast('Formato JSON inválido. Esperado: { "alunos": [...] }', 'error');
             }
         }
 
-        /* CONFIGURAÇÃO DRAG & DROP (ARRASTAR E LARGAR) */
-        let dragCounter = 0;
-
-        window.addEventListener('dragenter', (e) => {
-            e.preventDefault();
-            dragCounter++;
-            document.body.classList.add('drag-over');
-        });
-
-        window.addEventListener('dragleave', (e) => {
-            e.preventDefault();
-            dragCounter--;
-            if (dragCounter === 0) {
-                document.body.classList.remove('drag-over');
-            }
-        });
-
-        window.addEventListener('dragover', (e) => {
-            e.preventDefault();
-        });
-
-        window.addEventListener('drop', (e) => {
-            e.preventDefault();
-            dragCounter = 0;
-            document.body.classList.remove('drag-over');
-            
-            if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-                lerFicheiro(e.dataTransfer.files[0]);
-            }
-        });
-
-        function guardarIndividualNoCadastro() {
-            const dados = {
-                nome: document.getElementById('in_nome').value.trim(),
-                sexo: document.getElementById('in_sexo').value,
-                data_nasc: document.getElementById('in_data_nasc').value.trim(),
-                naturalidade: document.getElementById('in_naturalidade').value.trim(),
-                distrito: document.getElementById('in_distrito').value.trim(),
-                provincia: document.getElementById('in_provincia').value.trim(),
-                pai: document.getElementById('in_pai').value.trim(),
-                mae: document.getElementById('in_mae').value.trim(),
-                bairro: document.getElementById('in_bairro').value.trim(),
-                morada: document.getElementById('in_morada').value.trim(),
-                ano: document.getElementById('in_ano').value.trim(),
-                lp: document.getElementById('in_lp').value.trim(),
-                mat: document.getElementById('in_mat').value.trim(),
-                cn: document.getElementById('in_cn').value.trim(),
-                cs: document.getElementById('in_cs').value.trim(),
-                evo: document.getElementById('in_evo').value.trim(),
-                ef: document.getElementById('in_ef').value.trim(),
-                comportamento: document.getElementById('in_comportamento').value,
-                resultado: document.getElementById('in_resultado').value,
-                data_emissao: document.getElementById('in_data_emissao').value.trim(),
-                extraido: document.getElementById('in_extraido').value.trim(),
-                conferido: document.getElementById('in_conferido').value.trim(),
-                directora: document.getElementById('in_directora').value.trim(),
-                carreira_directora: document.getElementById('in_carreira_directora').value.trim(),
-                id: gerarId()
-            };
-            if (!dados.nome) {
-                alert('Indique o nome do aluno antes de guardar no cadastro.');
+        function importarExcel(jsonData) {
+            if (!jsonData || jsonData.length === 0) {
+                mostrarToast('O ficheiro Excel está vazio.', 'error');
                 return;
             }
-            alunos.push(dados);
-            saveAlunos();
-            renderTabela();
-            alert('Aluno guardado no cadastro com sucesso!');
+
+            const novosAlunos = jsonData.map(row => {
+                const aluno = {};
+                const mapeamento = {
+                    'Nome': 'nome',
+                    'Sexo': 'sexo',
+                    'Data Nasc': 'data_nasc',
+                    'Naturalidade': 'naturalidade',
+                    'Distrito': 'distrito',
+                    'Província': 'provincia',
+                    'Pai': 'pai',
+                    'Mãe': 'mae',
+                    'Bairro': 'bairro',
+                    'Morada': 'morada',
+                    'Ano': 'ano',
+                    'Português': 'lp',
+                    'Matemática': 'mat',
+                    'C. Naturais': 'cn',
+                    'C. Sociais': 'cs',
+                    'E. Visual': 'evo',
+                    'E. Física': 'ef',
+                    'Comportamento': 'comportamento'
+                };
+
+                Object.keys(row).forEach(key => {
+                    const campo = mapeamento[key];
+                    if (campo) {
+                        aluno[campo] = String(row[key] || '').trim();
+                    }
+                });
+
+                if (!aluno.id) aluno.id = Date.now().toString() + Math.random().toString(36).substr(2, 5);
+                if (!aluno.ano) aluno.ano = String(new Date().getFullYear());
+                if (!aluno.sexo) aluno.sexo = 'Feminino';
+                if (!aluno.comportamento) aluno.comportamento = 'Satisfatório';
+                
+                return aluno;
+            });
+
+            alunos = alunos.concat(novosAlunos);
+            salvarDados();
+            atualizarTabela();
+            atualizarContagem();
+            atualizarEstatisticas();
+            preencherSelectAlunos();
+            mostrarToast(`${novosAlunos.length} alunos importados do Excel!`, 'success');
         }
 
-        function popularSelectCadastro() {
-            const sel = document.getElementById('selectCarregarCadastro');
-            if (!sel) return;
-            const valorAtual = sel.value;
-            sel.innerHTML = '<option value="">— Carregar dados de um aluno do cadastro —</option>' +
-                alunos.map(a => `<option value="${a.id}">${escapeHtml(a.nome)}</option>`).join('');
-            sel.value = valorAtual;
+        function exportarJSON() {
+            const data = { alunos: alunos };
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `cadastro_alunos_${new Date().toISOString().slice(0,10)}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            mostrarToast('Cadastro exportado com sucesso!', 'success');
         }
 
-        function carregarDoCadastro() {
-            const sel = document.getElementById('selectCarregarCadastro');
-            const id = sel.value;
-            if (!id) return;
-            const a = alunos.find(x => x.id === id);
-            if (!a) return;
-            document.getElementById('in_nome').value = a.nome || '';
-            document.getElementById('in_sexo').value = a.sexo || 'Feminino';
-            document.getElementById('in_data_nasc').value = a.data_nasc || '';
-            document.getElementById('in_naturalidade').value = a.naturalidade || '';
-            document.getElementById('in_distrito').value = a.distrito || '';
-            document.getElementById('in_provincia').value = a.provincia || '';
-            document.getElementById('in_pai').value = a.pai || '';
-            document.getElementById('in_mae').value = a.mae || '';
-            document.getElementById('in_bairro').value = a.bairro || '';
-            document.getElementById('in_morada').value = a.morada || '';
-            document.getElementById('in_ano').value = a.ano || '';
-            document.getElementById('in_lp').value = a.lp || '';
-            document.getElementById('in_mat').value = a.mat || '';
-            document.getElementById('in_cn').value = a.cn || '';
-            document.getElementById('in_cs').value = a.cs || '';
-            document.getElementById('in_evo').value = a.evo || '';
-            document.getElementById('in_ef').value = a.ef || '';
-            document.getElementById('in_comportamento').value = a.comportamento || 'Bom';
-            document.getElementById('in_resultado').value = a.resultado || 'Não Admitido';
-            document.getElementById('in_data_emissao').value = a.data_emissao || '';
-            document.getElementById('in_extraido').value = a.extraido || '';
-            document.getElementById('in_conferido').value = a.conferido || '';
-            document.getElementById('in_directora').value = a.directora || '';
-            document.getElementById('in_carreira_directora').value = a.carreira_directora || '';
-            atualizar();
-        }
+        // ============================================================
+        // CONFIGURAÇÕES DE DRAG & DROP
+        // ============================================================
 
-        function switchTab(tab) {
-            document.getElementById('tab-cadastro').style.display = tab === 'cadastro' ? 'block' : 'none';
-            document.getElementById('tab-individual').style.display = tab === 'individual' ? 'block' : 'none';
-            document.getElementById('individualPreviewWrapper').style.display = tab === 'individual' ? 'block' : 'none';
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
-        }
+        function configurarDragDrop() {
+            document.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                document.body.classList.add('drag-over');
+            });
 
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.addEventListener('click', () => switchTab(btn.dataset.tab));
-        });
+            document.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                document.body.classList.remove('drag-over');
+            });
 
-        /* REGISTO DO SERVICE WORKER COM ATUALIZAÇÃO AUTOMÁTICA DA PÁGINA */
-        if ('serviceWorker' in navigator) {
-            let refreshing = false;
-
-            navigator.serviceWorker.addEventListener('controllerchange', () => {
-                if (!refreshing) {
-                    refreshing = true;
-                    window.location.reload();
+            document.addEventListener('drop', function(e) {
+                e.preventDefault();
+                document.body.classList.remove('drag-over');
+                
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    const file = files[0];
+                    const input = document.getElementById('importFile');
+                    const dt = new DataTransfer();
+                    dt.items.add(file);
+                    input.files = dt.files;
+                    input.dispatchEvent(new Event('change'));
                 }
             });
+        }
 
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js').then((reg) => {
-                    reg.update();
-                }).catch(err => console.log('Erro ao registrar Service Worker:', err));
+        function configurarImportacao() {
+            document.getElementById('importFile').addEventListener('change', function(e) {
+                if (this.files.length > 0) {
+                    processarFicheiroEntrada(e);
+                }
             });
         }
 
-        loadAlunos();
-        renderTabela();
-        switchTab('cadastro');
-        atualizar();
+        // ============================================================
+        // CONFIGURAÇÃO DAS ABAS
+        // ============================================================
+
+        function configurarTabs() {
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const tab = this.dataset.tab;
+                    
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    document.querySelectorAll('.tab-content').forEach(content => content.style.display = 'none');
+                    document.getElementById(`tab-${tab}`).style.display = 'block';
+                    
+                    if (tab === 'individual') {
+                        preencherSelectAlunos();
+                    }
+                    if (tab === 'gestao-anos') {
+                        atualizarListaAnos();
+                        atualizarEstatisticas();
+                    }
+                });
+            });
+        }
+
+        // ============================================================
+        // PERSISTÊNCIA DE DADOS (localStorage)
+        // ============================================================
+
+        function salvarDados() {
+            try {
+                localStorage.setItem('alunos_chitsongo', JSON.stringify(alunos));
+                localStorage.setItem('anos_chitsongo', JSON.stringify(anosLectivos));
+            } catch (e) {
+                console.error('Erro ao salvar dados:', e);
+            }
+        }
+
+        function carregarDados() {
+            try {
+                const alunosData = localStorage.getItem('alunos_chitsongo');
+                if (alunosData) {
+                    alunos = JSON.parse(alunosData);
+                }
+                
+                const anosData = localStorage.getItem('anos_chitsongo');
+                if (anosData) {
+                    anosLectivos = JSON.parse(anosData);
+                }
+            } catch (e) {
+                console.error('Erro ao carregar dados:', e);
+                alunos = [];
+                anosLectivos = [];
+            }
+        }
+
+        // ============================================================
+        // TOAST DE NOTIFICAÇÃO
+        // ============================================================
+
+        function mostrarToast(mensagem, tipo = 'info') {
+            const toast = document.getElementById('toast');
+            toast.textContent = mensagem;
+            toast.className = 'toast';
+            if (tipo === 'error') toast.classList.add('error');
+            if (tipo === 'success') toast.classList.add('success');
+            
+            toast.classList.add('show');
+            
+            clearTimeout(toast._timeout);
+            toast._timeout = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 4000);
+        }
+
+        // ============================================================
+        // INICIALIZAÇÃO COMPLEMENTAR
+        // ============================================================
+
+        // Atualiza as listas quando a janela é carregada
+        window.addEventListener('load', function() {
+            preencherSelectAlunos();
+            atualizarListaAnos();
+            atualizarEstatisticas();
+        });
+
+        // Recarregar dados quando outras abas do navegador atualizam
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'alunos_chitsongo' || e.key === 'anos_chitsongo') {
+                carregarDados();
+                atualizarTabela();
+                atualizarContagem();
+                preencherSelectAlunos();
+                atualizarListaAnos();
+                atualizarEstatisticas();
+            }
+        });
+
+        console.log('📚 Sistema de Certidões com Suporte a Múltiplos Anos Lectivos carregado!');
+        console.log(`📅 Anos disponíveis: ${anosLectivos.join(', ')}`);
+        console.log(`👨‍🎓 Alunos cadastrados: ${alunos.length}`);
     </script>
+
 </body>
 </html>
