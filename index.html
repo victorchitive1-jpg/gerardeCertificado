@@ -31,6 +31,43 @@
             position: relative;
         }
 
+        /* Overlay da Tela de Login */
+        .login-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 51, 102, 0.95);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            font-family: Arial, sans-serif;
+        }
+
+        .login-card {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 420px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .login-card h3 {
+            margin-top: 0;
+            color: #003366;
+            text-align: center;
+        }
+
+        .pin-field {
+            text-align: center;
+            letter-spacing: 6px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
         /* Overlay de Drag and Drop */
         .drop-overlay {
             display: none;
@@ -114,6 +151,35 @@
             font-family: Arial, sans-serif;
         }
 
+        /* Estilos do Gerenciador de Disciplinas */
+        .disc-manager-container {
+            grid-column: 1 / -1;
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .disc-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 12px;
+            font-family: Arial, sans-serif;
+        }
+
+        .disc-table th, .disc-table td {
+            border: 1px solid #e2e8f0;
+            padding: 8px;
+            text-align: left;
+            font-size: 13px;
+        }
+
+        .disc-table th {
+            background-color: #edf2f7;
+            color: #1e293b;
+        }
+
         .btn-container {
             display: flex;
             gap: 10px;
@@ -134,32 +200,19 @@
             gap: 6px;
         }
 
-        .btn-primary {
-            background-color: #003366;
-            color: white;
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 12px;
         }
 
-        .btn-primary:hover {
-            background-color: #002244;
-        }
-
-        .btn-secondary {
-            background-color: #e8edf3;
-            color: #003366;
-        }
-
-        .btn-secondary:hover {
-            background-color: #d5deea;
-        }
-
-        .btn-success {
-            background-color: #1b7a3d;
-            color: white;
-        }
-
-        .btn-success:hover {
-            background-color: #14602f;
-        }
+        .btn-primary { background-color: #003366; color: white; }
+        .btn-primary:hover { background-color: #002244; }
+        .btn-secondary { background-color: #e8edf3; color: #003366; }
+        .btn-secondary:hover { background-color: #d5deea; }
+        .btn-success { background-color: #1b7a3d; color: white; }
+        .btn-success:hover { background-color: #14602f; }
+        .btn-danger { background-color: #c53030; color: white; }
+        .btn-danger:hover { background-color: #9b2c2c; }
 
         /* Abas */
         .tabs {
@@ -182,14 +235,8 @@
             margin-bottom: -2px;
         }
 
-        .tab-btn:hover {
-            color: #003366;
-        }
-
-        .tab-btn.active {
-            color: #003366;
-            border-bottom-color: #003366;
-        }
+        .tab-btn:hover { color: #003366; }
+        .tab-btn.active { color: #003366; border-bottom-color: #003366; }
 
         .cadastro-toolbar {
             display: flex;
@@ -213,7 +260,7 @@
             font-size: 16px;
         }
 
-        /* Tabela de Alunos com Rolagem Horizontal */
+        /* Tabela de Alunos */
         .tabela-wrapper {
             width: 100%;
             overflow-x: auto;
@@ -246,14 +293,9 @@
             background: #ffffff;
         }
 
-        .tabela-alunos tbody tr:hover td {
-            background-color: #f1f5f9;
-        }
+        .tabela-alunos tbody tr:hover td { background-color: #f1f5f9; }
 
-        .acoes-col {
-            white-space: nowrap;
-            text-align: center;
-        }
+        .acoes-col { white-space: nowrap; text-align: center; }
 
         .btn-icon {
             border: none;
@@ -264,9 +306,7 @@
             border-radius: 3px;
         }
 
-        .btn-icon:hover {
-            background-color: #dbe4ee;
-        }
+        .btn-icon:hover { background-color: #dbe4ee; }
 
         .cadastro-vazio {
             text-align: center;
@@ -308,11 +348,7 @@
             outline-offset: -8px;
         }
 
-        /* Cabeçalho Oficial */
-        .header {
-            text-align: center;
-            margin-bottom: 15px;
-        }
+        .header { text-align: center; margin-bottom: 15px; }
 
         .emblem {
             display: block;
@@ -321,26 +357,9 @@
             margin: 0 auto 10px auto;
         }
 
-        .header h3 {
-            margin: 2px 0;
-            font-size: 13pt;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-
-        .header h4 {
-            margin: 2px 0;
-            font-size: 11pt;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-
-        .header h5 {
-            margin: 2px 0;
-            font-size: 10.5pt;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
+        .header h3 { margin: 2px 0; font-size: 13pt; font-weight: bold; text-transform: uppercase; }
+        .header h4 { margin: 2px 0; font-size: 11pt; font-weight: bold; text-transform: uppercase; }
+        .header h5 { margin: 2px 0; font-size: 10.5pt; font-weight: bold; text-transform: uppercase; }
 
         .doc-title {
             text-align: center;
@@ -351,7 +370,6 @@
             text-decoration: underline;
         }
 
-        /* Corpo do Texto */
         .body-text {
             font-size: 12pt;
             line-height: 1.55;
@@ -360,9 +378,7 @@
             text-indent: 30px;
         }
 
-        .bold-field {
-            font-weight: bold;
-        }
+        .bold-field { font-weight: bold; }
 
         /* Tabela de Notas Elegante */
         .table-notas {
@@ -389,15 +405,8 @@
             letter-spacing: 0.6px;
         }
 
-        .table-notas tbody tr:nth-child(even) {
-            background-color: #f8fafc;
-        }
-
-        /* Centralização das notas */
-        .table-notas td.center,
-        .table-notas td:nth-child(3) {
-            text-align: center;
-        }
+        .table-notas tbody tr:nth-child(even) { background-color: #f8fafc; }
+        .table-notas td.center, .table-notas td:nth-child(3) { text-align: center; }
 
         .table-notas tr.media-row td {
             font-weight: bold;
@@ -407,7 +416,6 @@
             border-bottom: 2px solid #1e293b;
         }
 
-        /* Conclusão e Assinaturas */
         .conclusao-text {
             font-size: 12pt;
             line-height: 1.55;
@@ -416,17 +424,9 @@
             margin-bottom: 16px;
         }
 
-        .location-date {
-            text-align: center;
-            font-size: 12pt;
-            margin-bottom: 18px;
-        }
+        .location-date { text-align: center; font-size: 12pt; margin-bottom: 18px; }
 
-        .signatures-grid {
-            display: table;
-            width: 100%;
-            margin-bottom: 26px;
-        }
+        .signatures-grid { display: table; width: 100%; margin-bottom: 26px; }
 
         .signature-col {
             display: table-cell;
@@ -442,47 +442,17 @@
             border-top: 1px solid #000;
         }
 
-        .directora-section {
-            text-align: center;
-            font-size: 12pt;
-            margin-top: 10px;
-        }
-
-        .mass-only {
-            display: none;
-        }
+        .directora-section { text-align: center; font-size: 12pt; margin-top: 10px; }
+        .mass-only { display: none; }
 
         /* Impressão */
         @media print {
-            @page {
-                size: A4 portrait;
-                margin: 0;
-            }
-
-            html, body {
-                width: 210mm;
-                height: 297mm;
-                margin: 0;
-                padding: 0;
-                background: white;
-            }
-
-            .no-print {
-                display: none !important;
-            }
-
-            body.mode-mass .single-preview {
-                display: none !important;
-            }
-
-            body.mode-mass .mass-only {
-                display: block !important;
-            }
-
-            body:not(.mode-mass) .mass-only {
-                display: none !important;
-            }
-
+            @page { size: A4 portrait; margin: 0; }
+            html, body { width: 210mm; height: 297mm; margin: 0; padding: 0; background: white; }
+            .no-print, .login-overlay { display: none !important; }
+            body.mode-mass .single-preview { display: none !important; }
+            body.mode-mass .mass-only { display: block !important; }
+            body:not(.mode-mass) .mass-only { display: none !important; }
             .certidao-page {
                 width: 210mm;
                 height: 297mm;
@@ -495,23 +465,52 @@
                 page-break-inside: avoid;
                 break-inside: avoid;
             }
-
-            .mass-only .certidao-page:last-child {
-                page-break-after: auto;
-                break-after: auto;
-            }
-
-            .table-notas {
-                border-color: #000 !important;
-            }
-
-            .table-notas th, .table-notas td {
-                border-color: #000 !important;
-            }
+            .mass-only .certidao-page:last-child { page-break-after: auto; break-after: auto; }
+            .table-notas { border-color: #000 !important; }
+            .table-notas th, .table-notas td { border-color: #000 !important; }
         }
     </style>
 </head>
 <body>
+
+    <!-- ECRÃ DE LOGIN / REGISTO DO PROFESSOR -->
+    <div id="loginOverlay" class="login-overlay">
+        <div class="login-card">
+            <h3 id="loginTitle">Acesso do Professor</h3>
+            <p id="loginSub" style="font-size: 12px; color: #666; text-align: center; margin-bottom: 20px;">
+                Configure ou introduza os seus dados para aceder ao sistema.
+            </p>
+
+            <form id="loginForm" onsubmit="processarLogin(event)">
+                <div id="camposRegisto">
+                    <div class="form-group" style="margin-bottom: 12px;">
+                        <label>Nome do Professor</label>
+                        <input type="text" id="prof_nome" required style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px;">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 12px;">
+                        <label>Província</label>
+                        <input type="text" id="prof_provincia" required style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px;">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 12px;">
+                        <label>Distrito</label>
+                        <input type="text" id="prof_distrito" required style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px;">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 12px;">
+                        <label>Nome da Escola</label>
+                        <input type="text" id="prof_escola" required style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px;">
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 18px;">
+                    <label>Senha de 4 Dígitos (PIN)</label>
+                    <input type="password" id="prof_pin" class="pin-field" maxlength="4" pattern="\d{4}" required placeholder="••••" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px;">
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center;">Entrar no Sistema</button>
+                <button type="button" id="btnRedefinir" onclick="redefinirDadosProfessor()" class="btn btn-secondary" style="width:100%; justify-content:center; margin-top:8px; display:none;">Alterar Dados do Professor</button>
+            </form>
+        </div>
+    </div>
 
     <!-- Overlay Visual para Drag & Drop -->
     <div class="drop-overlay">
@@ -542,6 +541,7 @@
                 <button type="button" class="btn btn-primary" onclick="abrirFormNovo()">➕ Novo Aluno</button>
                 <button type="button" class="btn btn-success" onclick="emitirEmMassa()">🖨️ Emitir Certidões em Massa</button>
                 <button type="button" class="btn btn-secondary" onclick="exportarJSON()">⬇️ Exportar Cadastro</button>
+                <button type="button" class="btn btn-secondary" onclick="abrirTelaLoginAjustes()">👤 Professor / Perfil</button>
                 <label class="btn btn-secondary" style="cursor:pointer; margin-bottom:0;">
                     📊 Importar Excel / JSON
                     <input type="file" id="importFile" accept=".xlsx, .xls, .csv, .json" style="display:none" onchange="processarFicheiroEntrada(event)">
@@ -554,11 +554,7 @@
                     <div class="form-grid">
                         <div class="section-title">Dados Pessoais do Aluno</div>
 
-                        <div class="form-group">
-                            <label>Nome Completo</label>
-                            <input type="text" id="c_nome">
-                        </div>
-
+                        <div class="form-group"><label>Nome Completo</label><input type="text" id="c_nome"></div>
                         <div class="form-group">
                             <label>Gênero</label>
                             <select id="c_sexo">
@@ -566,86 +562,25 @@
                                 <option value="Masculino">Masculino</option>
                             </select>
                         </div>
-
-                        <div class="form-group">
-                            <label>Data de Nascimento</label>
-                            <input type="text" id="c_data_nasc" placeholder="Ex: 15 de agosto de 2015">
-                        </div>
-
-                        <div class="form-group">
-                            <label>Naturalidade (Natural)</label>
-                            <input type="text" id="c_naturalidade">
-                        </div>
-
-                        <div class="form-group">
-                            <label>Distrito</label>
-                            <input type="text" id="c_distrito">
-                        </div>
-
-                        <div class="form-group">
-                            <label>Província</label>
-                            <input type="text" id="c_provincia">
-                        </div>
-
-                        <div class="form-group">
-                            <label>Pai</label>
-                            <input type="text" id="c_pai">
-                        </div>
-
-                        <div class="form-group">
-                            <label>Mãe</label>
-                            <input type="text" id="c_mae">
-                        </div>
-
-                        <div class="form-group">
-                            <label>Bairro</label>
-                            <input type="text" id="c_bairro">
-                        </div>
-
-                        <div class="form-group">
-                            <label>Morada</label>
-                            <input type="text" id="c_morada">
-                        </div>
-
-                        <div class="form-group">
-                            <label>Ano Lectivo</label>
-                            <input type="text" id="c_ano" value="2025">
-                        </div>
+                        <div class="form-group"><label>Data de Nascimento</label><input type="text" id="c_data_nasc" placeholder="Ex: 15 de agosto de 2015"></div>
+                        <div class="form-group"><label>Naturalidade (Natural)</label><input type="text" id="c_naturalidade"></div>
+                        <div class="form-group"><label>Distrito</label><input type="text" id="c_distrito"></div>
+                        <div class="form-group"><label>Província</label><input type="text" id="c_provincia"></div>
+                        <div class="form-group"><label>Pai</label><input type="text" id="c_pai"></div>
+                        <div class="form-group"><label>Mãe</label><input type="text" id="c_mae"></div>
+                        <div class="form-group"><label>Bairro</label><input type="text" id="c_bairro"></div>
+                        <div class="form-group"><label>Morada</label><input type="text" id="c_morada"></div>
+                        <div class="form-group"><label>Ano Lectivo</label><input type="text" id="c_ano" value="2025"></div>
 
                         <div class="section-title">Notas das Disciplinas</div>
-
-                        <div class="form-group">
-                            <label>Português (0-20)</label>
-                            <input type="text" id="c_lp" placeholder="Ex: 14 ou --">
-                        </div>
-
-                        <div class="form-group">
-                            <label>Matemática (0-20)</label>
-                            <input type="text" id="c_mat" placeholder="Ex: 12 ou --">
-                        </div>
-
-                        <div class="form-group">
-                            <label>C. Naturais (0-20)</label>
-                            <input type="text" id="c_cn" placeholder="Ex: 13 ou --">
-                        </div>
-
-                        <div class="form-group">
-                            <label>C. Sociais (0-20)</label>
-                            <input type="text" id="c_cs" placeholder="Ex: 13 ou --">
-                        </div>
-
-                        <div class="form-group">
-                            <label>E. Visual (0-20)</label>
-                            <input type="text" id="c_evo" placeholder="Ex: 15 ou --">
-                        </div>
-
-                        <div class="form-group">
-                            <label>E. Física (Nota ou Qualidade)</label>
-                            <input type="text" id="c_ef" list="opcoes_ef" placeholder="Ex: 14, Satisfatório ou --">
-                        </div>
+                        <div class="form-group"><label>Português (0-20)</label><input type="text" id="c_lp" placeholder="Ex: 14 ou --"></div>
+                        <div class="form-group"><label>Matemática (0-20)</label><input type="text" id="c_mat" placeholder="Ex: 12 ou --"></div>
+                        <div class="form-group"><label>C. Naturais (0-20)</label><input type="text" id="c_cn" placeholder="Ex: 13 ou --"></div>
+                        <div class="form-group"><label>C. Sociais (0-20)</label><input type="text" id="c_cs" placeholder="Ex: 13 ou --"></div>
+                        <div class="form-group"><label>E. Visual (0-20)</label><input type="text" id="c_evo" placeholder="Ex: 15 ou --"></div>
+                        <div class="form-group"><label>E. Física (Nota ou Qualidade)</label><input type="text" id="c_ef" list="opcoes_ef" placeholder="Ex: 14, Satisfatório ou --"></div>
 
                         <div class="section-title">Dados Finais e Validação</div>
-
                         <div class="form-group">
                             <label>Comportamento</label>
                             <select id="c_comportamento">
@@ -656,7 +591,6 @@
                                 <option value="Excelente">Excelente</option>
                             </select>
                         </div>
-
                         <div class="form-group">
                             <label>Resultado</label>
                             <select id="c_resultado">
@@ -668,31 +602,12 @@
                                 <option value="Reprovado">Reprovado</option>
                             </select>
                         </div>
-
-                        <div class="form-group">
-                            <label>Data de Emissão</label>
-                            <input type="text" id="c_data_emissao" placeholder="Ex: 27 de Julho de 2026">
-                        </div>
-
-                        <div class="form-group">
-                            <label>Extraído Por</label>
-                            <input type="text" id="c_extraido">
-                        </div>
-
-                        <div class="form-group">
-                            <label>Conferido Por</label>
-                            <input type="text" id="c_conferido">
-                        </div>
-
-                        <div class="form-group">
-                            <label>Directora da Escola</label>
-                            <input type="text" id="c_directora">
-                        </div>
-
-                        <div class="form-group">
-                            <label>Carreira / Categoria</label>
-                            <input type="text" id="c_carreira_directora" placeholder="Ex: DN3">
-                        </div>
+                        <div class="form-group"><label>Local e Data</label><input type="text" id="c_local_data" placeholder="Ex: Chitsongo, aos 27 de Julho de 2026"></div>
+                        <div class="form-group"><label>Data de Emissão</label><input type="text" id="c_data_emissao" placeholder="Ex: 27 de Julho de 2026"></div>
+                        <div class="form-group"><label>Extraído Por</label><input type="text" id="c_extraido"></div>
+                        <div class="form-group"><label>Conferido Por</label><input type="text" id="c_conferido"></div>
+                        <div class="form-group"><label>Directora da Escola</label><input type="text" id="c_directora"></div>
+                        <div class="form-group"><label>Carreira / Categoria</label><input type="text" id="c_carreira_directora" placeholder="Ex: DN3"></div>
                     </div>
                 </form>
                 <div class="btn-container">
@@ -739,275 +654,270 @@
 
         <!-- ABA: EMISSÃO INDIVIDUAL -->
         <div id="tab-individual" class="tab-content" style="display:none;">
-        <select id="selectCarregarCadastro" class="select-cadastro" onchange="carregarDoCadastro()">
-            <option value="">— Carregar dados de um aluno do cadastro —</option>
-        </select>
+            <select id="selectCarregarCadastro" class="select-cadastro" onchange="carregarDoCadastro()">
+                <option value="">— Carregar dados de um aluno do cadastro —</option>
+            </select>
 
-        <form id="certForm">
-            <div class="form-grid">
-                <div class="section-title">Dados Pessoais do Aluno</div>
+            <form id="certForm">
+                <div class="form-grid">
+                    <div class="section-title">Dados Pessoais do Aluno</div>
 
-                <div class="form-group">
-                    <label>Nome Completo</label>
-                    <input type="text" id="in_nome" value="Adolvina Da Arcenia Maússe">
+                    <div class="form-group"><label>Nome Completo</label><input type="text" id="in_nome" value="Adolvina Da Arcenia Maússe"></div>
+                    <div class="form-group">
+                        <label>Gênero</label>
+                        <select id="in_sexo">
+                            <option value="Feminino" selected>Feminino</option>
+                            <option value="Masculino">Masculino</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Data de Nascimento</label><input type="text" id="in_data_nasc" value="15 de agosto de 2015"></div>
+                    <div class="form-group"><label>Naturalidade (Natural)</label><input type="text" id="in_naturalidade" value="Mandlakazi"></div>
+                    <div class="form-group"><label>Distrito</label><input type="text" id="in_distrito" value="Mandlakazi"></div>
+                    <div class="form-group"><label>Província</label><input type="text" id="in_provincia" value="Gaza"></div>
+                    <div class="form-group"><label>Pai</label><input type="text" id="in_pai" value=""></div>
+                    <div class="form-group"><label>Mãe</label><input type="text" id="in_mae" value="Arcênia Maússe"></div>
+                    <div class="form-group"><label>Bairro</label><input type="text" id="in_bairro" value=""></div>
+                    <div class="form-group"><label>Morada</label><input type="text" id="in_morada" value=""></div>
+                    <div class="form-group"><label>Ano Lectivo</label><input type="text" id="in_ano" value="2025"></div>
+
+                    <!-- GESTÃO DINÂMICA DE DISCIPLINAS NO CERTIFICADO -->
+                    <div class="section-title">Disciplinas e Notas do Certificado</div>
+                    <div class="disc-manager-container">
+                        <table class="disc-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 40px; text-align: center;">Incluir</th>
+                                    <th>Nome da Disciplina</th>
+                                    <th style="width: 150px;">Nota / Qualificação</th>
+                                    <th style="width: 60px; text-align: center;">Ação</th>
+                                </tr>
+                            </thead>
+                            <tbody id="discTableBody"></tbody>
+                        </table>
+
+                        <div style="display: flex; gap: 8px;">
+                            <input type="text" id="novo_disc_nome" placeholder="Nova Disciplina (Ex: Língua Inglesa)" style="flex: 2; padding: 6px;">
+                            <input type="text" id="novo_disc_nota" placeholder="Nota (0-20 ou Texto)" style="flex: 1; padding: 6px;">
+                            <button type="button" class="btn btn-secondary btn-sm" onclick="adicionarDisciplinaForm()">➕ Adicionar Disciplina</button>
+                        </div>
+                    </div>
+
+                    <div class="section-title">Dados Finais e Validação</div>
+                    <div class="form-group">
+                        <label>Comportamento</label>
+                        <select id="in_comportamento">
+                            <option value="Não Satisfatório">Não Satisfatório</option>
+                            <option value="Satisfatório">Satisfatório</option>
+                            <option value="Bom" selected>Bom</option>
+                            <option value="Muito Bom">Muito Bom</option>
+                            <option value="Excelente">Excelente</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Resultado</label>
+                        <select id="in_resultado">
+                            <option value="Não Admitido" selected>Não Admitido</option>
+                            <option value="Aprovada">Aprovada</option>
+                            <option value="Aprovado">Aprovado</option>
+                            <option value="Admitido">Admitido</option>
+                            <option value="Reprovada">Reprovada</option>
+                            <option value="Reprovado">Reprovado</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group"><label>Local e Data</label><input type="text" id="in_local_data" value="Chitsongo, aos 27 de Julho de 2026"></div>
+                    <div class="form-group"><label>Data de Emissão</label><input type="text" id="in_data_emissao" value="27 de Julho de 2026"></div>
+                    <div class="form-group"><label>Extraído Por</label><input type="text" id="in_extraido" value=""></div>
+                    <div class="form-group"><label>Conferido Por</label><input type="text" id="in_conferido" value="Paulo Sithole"></div>
+                    <div class="form-group"><label>Directora da Escola</label><input type="text" id="in_directora" value="Laurinda Alberto Zavale Langa"></div>
+                    <div class="form-group"><label>Carreira da Directora</label><input type="text" id="in_carreira_directora" value="DN3"></div>
                 </div>
 
-                <div class="form-group">
-                    <label>Gênero</label>
-                    <select id="in_sexo">
-                        <option value="Feminino" selected>Feminino</option>
-                        <option value="Masculino">Masculino</option>
-                    </select>
+                <div class="btn-container">
+                    <button type="button" class="btn btn-secondary" onclick="guardarIndividualNoCadastro()">💾 Guardar no Cadastro</button>
+                    <button type="button" class="btn btn-primary" onclick="window.print()">🖨️ Imprimir / Guardar em PDF</button>
                 </div>
-
-                <div class="form-group">
-                    <label>Data de Nascimento</label>
-                    <input type="text" id="in_data_nasc" value="15 de agosto de 2015">
-                </div>
-
-                <div class="form-group">
-                    <label>Naturalidade (Natural)</label>
-                    <input type="text" id="in_naturalidade" value="Mandlakazi">
-                </div>
-
-                <div class="form-group">
-                    <label>Distrito</label>
-                    <input type="text" id="in_distrito" value="Mandlakazi">
-                </div>
-
-                <div class="form-group">
-                    <label>Província</label>
-                    <input type="text" id="in_provincia" value="Gaza">
-                </div>
-
-                <div class="form-group">
-                    <label>Pai</label>
-                    <input type="text" id="in_pai" value="">
-                </div>
-
-                <div class="form-group">
-                    <label>Mãe</label>
-                    <input type="text" id="in_mae" value="Arcênia Maússe">
-                </div>
-
-                <div class="form-group">
-                    <label>Bairro</label>
-                    <input type="text" id="in_bairro" value="">
-                </div>
-
-                <div class="form-group">
-                    <label>Morada</label>
-                    <input type="text" id="in_morada" value="">
-                </div>
-
-                <div class="form-group">
-                    <label>Ano Lectivo</label>
-                    <input type="text" id="in_ano" value="2025">
-                </div>
-
-                <div class="section-title">Notas das Disciplinas</div>
-
-                <div class="form-group">
-                    <label>Português (0-20)</label>
-                    <input type="text" id="in_lp" value="--">
-                </div>
-
-                <div class="form-group">
-                    <label>Matemática (0-20)</label>
-                    <input type="text" id="in_mat" value="--">
-                </div>
-
-                <div class="form-group">
-                    <label>C. Naturais (0-20)</label>
-                    <input type="text" id="in_cn" value="--">
-                </div>
-
-                <div class="form-group">
-                    <label>C. Sociais (0-20)</label>
-                    <input type="text" id="in_cs" value="--">
-                </div>
-
-                <div class="form-group">
-                    <label>E. Visual (0-20)</label>
-                    <input type="text" id="in_evo" value="--">
-                </div>
-
-                <div class="form-group">
-                    <label>E. Física (Nota ou Qualidade)</label>
-                    <input type="text" id="in_ef" value="--" list="opcoes_ef">
-                </div>
-
-                <div class="section-title">Dados Finais e Validação</div>
-
-                <div class="form-group">
-                    <label>Comportamento</label>
-                    <select id="in_comportamento">
-                        <option value="Não Satisfatório">Não Satisfatório</option>
-                        <option value="Satisfatório">Satisfatório</option>
-                        <option value="Bom" selected>Bom</option>
-                        <option value="Muito Bom">Muito Bom</option>
-                        <option value="Excelente">Excelente</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label>Resultado</label>
-                    <select id="in_resultado">
-                        <option value="Não Admitido" selected>Não Admitido</option>
-                        <option value="Aprovada">Aprovada</option>
-                        <option value="Aprovado">Aprovado</option>
-                        <option value="Admitido">Admitido</option>
-                        <option value="Reprovada">Reprovada</option>
-                        <option value="Reprovado">Reprovado</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label>Data de Emissão</label>
-                    <input type="text" id="in_data_emissao" value="27 de Julho de 2026">
-                </div>
-
-                <div class="form-group">
-                    <label>Extraído Por</label>
-                    <input type="text" id="in_extraido" value="Teresa Chivulele">
-                </div>
-
-                <div class="form-group">
-                    <label>Conferido Por</label>
-                    <input type="text" id="in_conferido" value="Paulo Sithole">
-                </div>
-
-                <div class="form-group">
-                    <label>Directora da Escola</label>
-                    <input type="text" id="in_directora" value="Laurinda Alberto Zavale Langa">
-                </div>
-
-                <div class="form-group">
-                    <label>Carreira da Directora</label>
-                    <input type="text" id="in_carreira_directora" value="DN3">
-                </div>
-            </div>
-
-            <div class="btn-container">
-                <button type="button" class="btn btn-secondary" onclick="guardarIndividualNoCadastro()">💾 Guardar no Cadastro</button>
-                <button type="button" class="btn btn-primary" onclick="window.print()">🖨️ Imprimir / Guardar em PDF</button>
-            </div>
-        </form>
+            </form>
         </div>
     </div>
 
     <!-- CERTIDÃO (PRÉ-VISUALIZAÇÃO INDIVIDUAL) -->
     <div id="individualPreviewWrapper">
-    <div class="certidao-page single-preview">
-        <div class="header">
-          <img src="Emblema.svg" class="emblem">
-          <div>
-            <h3>REPÚBLICA DE MOÇAMBIQUE</h3>
-            <h4>PROVÍNCIA DE GAZA</h4>
-            <h4>GOVERNO DO DISTRITO DE MANDLAKAZI</h4>
-            <h5>SERVIÇO DISTRITAL DE EDUCAÇÃO, JUVENTUDE E TECNOLOGIA</h5>
-            <h5>ESCOLA PRIMÁRIA DE CHITSONGO</h5>
-          </div>
-        </div>
-
-        <div class="doc-title">CERTIDÃO</div>
-
-        <div class="body-text">
-            <span class="fill bold-field" id="out_directora">Laurinda Alberto Zavale Langa</span>, Directora da Escola Primária de Chitsongo, certifica em cumprimento do despacho exarado em requerimento que fica arquivado na secretaria desta escola, que <span class="fill bold-field" id="out_nome">Adolvina Da Arcenia Maússe</span>, do sexo <span class="fill" id="out_sexo">Feminino</span>, nascido(a) em <span class="fill" id="out_naturalidade">Mandlakazi</span>, no dia <span class="fill" id="out_data_nasc">15 de agosto de 2015</span>, filho(a) de <span class="fill" id="out_pai">--</span> e de <span class="fill" id="out_mae">Arcênia Maússe</span>, Concluiu nesta Escola a 6ª classe do Ensino Primário no ano lectivo de <span class="fill" id="out_ano">2025</span> e obteve os seguintes resultados por disciplina:
-        </div>
-
-        <table class="table-notas">
-            <thead>
-                <tr>
-                    <th rowspan="2" style="vertical-align: middle; width: 45%;">Disciplina</th>
-                    <th colspan="2" style="width: 40%;">Notas</th>
-                    <th rowspan="2" style="vertical-align: middle; width: 15%;">Unidade</th>
-                </tr>
-                <tr>
-                    <th style="width: 15%;">Algarismos</th>
-                    <th style="width: 25%;">Extenso</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Língua portuguesa</td>
-                    <td class="center" id="out_lp_num">--</td>
-                    <td class="center" id="out_lp_ext">--</td>
-                    <td class="center">Valores</td>
-                </tr>
-                <tr>
-                    <td>Ciências Naturais</td>
-                    <td class="center" id="out_cn_num">--</td>
-                    <td class="center" id="out_cn_ext">--</td>
-                    <td class="center">Valores</td>
-                </tr>
-                <tr>
-                    <td>Matemática</td>
-                    <td class="center" id="out_mat_num">--</td>
-                    <td class="center" id="out_mat_ext">--</td>
-                    <td class="center">Valores</td>
-                </tr>
-                <tr>
-                    <td>Ciências Sociais</td>
-                    <td class="center" id="out_cs_num">--</td>
-                    <td class="center" id="out_cs_ext">--</td>
-                    <td class="center">Valores</td>
-                </tr>
-                <tr>
-                    <td>Educação Visual e Ofícios</td>
-                    <td class="center" id="out_evo_num">--</td>
-                    <td class="center" id="out_evo_ext">--</td>
-                    <td class="center">Valores</td>
-                </tr>
-                <tr>
-                    <td>Educação Física</td>
-                    <td class="center" id="out_ef_num">--</td>
-                    <td class="center" id="out_ef_ext">--</td>
-                    <td class="center">Valores</td>
-                </tr>
-                <tr class="media-row">
-                    <td>Média</td>
-                    <td class="center" id="out_media_num">0</td>
-                    <td class="center" id="out_media_ext">Zero</td>
-                    <td class="center">Valores</td>
-                </tr>
-            </tbody>
-        </table>
-
-        <div class="conclusao-text">
-            Com comportamento <span class="fill" id="out_comportamento">Bom</span> e resultado <span class="fill" id="out_resultado">Não Admitido</span> por ser verdade, manda passar a Presente Certidão que assina e autentica com o carimbo a tinta em uso nesta Instituição do Ensino.
-        </div>
-
-        <div class="location-date">
-            Chitsongo, aos <span id="out_data_emissao">27 de Julho de 2026</span>
-        </div>
-
-        <div class="signatures-grid">
-            <div class="signature-col">
-                Extraído por:<br>
-                <div class="signature-line"></div>
-                <span id="out_extraido">Teresa Chivulele</span>
+        <div class="certidao-page single-preview">
+            <div class="header">
+              <img src="Emblema.svg" class="emblem">
+              <div>
+                <h3>REPÚBLICA DE MOÇAMBIQUE</h3>
+                <h4 id="hdr_provincia">PROVÍNCIA DE GAZA</h4>
+                <h4 id="hdr_distrito">GOVERNO DO DISTRITO DE MANDLAKAZI</h4>
+                <h5>SERVIÇO DISTRITAL DE EDUCAÇÃO, JUVENTUDE E TECNOLOGIA</h5>
+                <h5 id="hdr_escola">ESCOLA PRIMÁRIA DE CHITSONGO</h5>
+              </div>
             </div>
-            <div class="signature-col">
-                Conferido Por:<br>
-                <div class="signature-line"></div>
-                <span id="out_conferido">Paulo Sithole</span>
+
+            <div class="doc-title">CERTIDÃO</div>
+
+            <div class="body-text">
+                <span class="fill bold-field" id="out_directora">Laurinda Alberto Zavale Langa</span>, Directora da Escola Primária de Chitsongo, certifica em cumprimento do despacho exarado em requerimento que fica arquivado na secretaria desta escola, que <span class="fill bold-field" id="out_nome">Adolvina Da Arcenia Maússe</span>, do sexo <span class="fill" id="out_sexo">Feminino</span>, nascido(a) em <span class="fill" id="out_naturalidade">Mandlakazi</span>, no dia <span class="fill" id="out_data_nasc">15 de agosto de 2015</span>, filho(a) de <span class="fill" id="out_pai">--</span> e de <span class="fill" id="out_mae">Arcênia Maússe</span>, Concluiu nesta Escola a 6ª classe do Ensino Primário no ano lectivo de <span class="fill" id="out_ano">2025</span> e obteve os seguintes resultados por disciplina:
+            </div>
+
+            <!-- Tabela de Notas Dinâmica -->
+            <table class="table-notas">
+                <thead>
+                    <tr>
+                        <th rowspan="2" style="vertical-align: middle; width: 45%;">Disciplina</th>
+                        <th colspan="2" style="width: 40%;">Notas</th>
+                        <th rowspan="2" style="vertical-align: middle; width: 15%;">Unidade</th>
+                    </tr>
+                    <tr>
+                        <th style="width: 15%;">Algarismos</th>
+                        <th style="width: 25%;">Extenso</th>
+                    </tr>
+                </thead>
+                <tbody id="out_tbody_notas"></tbody>
+            </table>
+
+            <div class="conclusao-text">
+                Com comportamento <span class="fill" id="out_comportamento">Bom</span> e resultado <span class="fill" id="out_resultado">Não Admitido</span> por ser verdade, manda passar a Presente Certidão que assina e autentica com o carimbo a tinta em uso nesta Instituição do Ensino.
+            </div>
+
+            <div class="location-date" id="out_local_data">
+                Chitsongo, aos <span id="out_data_emissao">27 de Julho de 2026</span>
+            </div>
+
+            <div class="signatures-grid">
+                <div class="signature-col">
+                    Extraído por:<br>
+                    <div class="signature-line"></div>
+                    <span id="out_extraido">--</span>
+                </div>
+                <div class="signature-col">
+                    Conferido Por:<br>
+                    <div class="signature-line"></div>
+                    <span id="out_conferido">Paulo Sithole</span>
+                </div>
+            </div>
+
+            <div class="directora-section">
+                A Directora da Escola<br>
+                <div class="signature-line" style="width: 50%;"></div>
+                <strong id="out_directora_sub">Laurinda Alberto Zavale Langa</strong><br>
+                <span style="font-size: 10pt;">/<span id="out_carreira_directora">DN3</span>/</span>
             </div>
         </div>
-
-        <div class="directora-section">
-            A Directora da Escola<br>
-            <div class="signature-line" style="width: 50%;"></div>
-            <strong id="out_directora_sub">Laurinda Alberto Zavale Langa</strong><br>
-            <span style="font-size: 10pt;">/<span id="out_carreira_directora">DN3</span>/</span>
-        </div>
-    </div>
     </div>
 
     <!-- CONTAINER PARA EMISSÃO EM MASSA -->
     <div id="massPrintContainer" class="mass-only"></div>
 
     <script>
+        /* --- ESTADO DAS DISCIPLINAS DA CERTIDÃO --- */
+        let disciplinasCertificado = [
+            { id: 'lp', nome: 'Língua portuguesa', nota: '--', ativa: true },
+            { id: 'cn', nome: 'Ciências Naturais', nota: '--', ativa: true },
+            { id: 'mat', nome: 'Matemática', nota: '--', ativa: true },
+            { id: 'cs', nome: 'Ciências Sociais', nota: '--', ativa: true },
+            { id: 'evo', nome: 'Educação Visual e Ofícios', nota: '--', ativa: true },
+            { id: 'ef', nome: 'Educação Física', nota: '--', ativa: true }
+        ];
+
+        /* --- AUTENTICAÇÃO E DADOS DO PROFESSOR --- */
+        const PROF_STORAGE_KEY = 'dados_prof_chitsongo_v1';
+
+        function verificarAutenticacao() {
+            const raw = localStorage.getItem(PROF_STORAGE_KEY);
+            const camposRegisto = document.getElementById('camposRegisto');
+            const loginTitle = document.getElementById('loginTitle');
+            const loginSub = document.getElementById('loginSub');
+            const btnRedefinir = document.getElementById('btnRedefinir');
+
+            if (raw) {
+                const prof = JSON.parse(raw);
+                camposRegisto.style.display = 'none';
+                btnRedefinir.style.display = 'flex';
+                document.querySelectorAll('#camposRegisto input').forEach(i => i.removeAttribute('required'));
+                loginTitle.textContent = 'Autenticação';
+                loginSub.textContent = `Prof. ${prof.nome} (${prof.escola})`;
+                document.getElementById('loginOverlay').style.display = 'flex';
+            } else {
+                camposRegisto.style.display = 'block';
+                btnRedefinir.style.display = 'none';
+                document.querySelectorAll('#camposRegisto input').forEach(i => i.setAttribute('required', 'true'));
+                loginTitle.textContent = 'Primeiro Acesso';
+                loginSub.textContent = 'Preencha os seus dados de professor para configurar o aplicativo.';
+                document.getElementById('loginOverlay').style.display = 'flex';
+            }
+        }
+
+        function abrirTelaLoginAjustes() {
+            const raw = localStorage.getItem(PROF_STORAGE_KEY);
+            if (raw) {
+                const prof = JSON.parse(raw);
+                document.getElementById('prof_nome').value = prof.nome || '';
+                document.getElementById('prof_provincia').value = prof.provincia || '';
+                document.getElementById('prof_distrito').value = prof.distrito || '';
+                document.getElementById('prof_escola').value = prof.escola || '';
+            }
+            document.getElementById('loginOverlay').style.display = 'flex';
+        }
+
+        function processarLogin(e) {
+            e.preventDefault();
+            const pin = document.getElementById('prof_pin').value;
+            const raw = localStorage.getItem(PROF_STORAGE_KEY);
+
+            if (raw) {
+                const prof = JSON.parse(raw);
+                if (pin === prof.pin) {
+                    document.getElementById('loginOverlay').style.display = 'none';
+                    aplicarConfiguracoesProf(prof);
+                    alert(`Bem-vindo(a), ${prof.nome}!`);
+                } else {
+                    alert('Senha (PIN) incorreta!');
+                    document.getElementById('prof_pin').value = '';
+                }
+            } else {
+                const novoProf = {
+                    nome: document.getElementById('prof_nome').value.trim(),
+                    provincia: document.getElementById('prof_provincia').value.trim(),
+                    distrito: document.getElementById('prof_distrito').value.trim(),
+                    escola: document.getElementById('prof_escola').value.trim(),
+                    pin: pin
+                };
+
+                localStorage.setItem(PROF_STORAGE_KEY, JSON.stringify(novoProf));
+                document.getElementById('loginOverlay').style.display = 'none';
+                aplicarConfiguracoesProf(novoProf);
+                alert(`Bem-vindo(a), ${novoProf.nome}!`);
+            }
+        }
+
+        function aplicarConfiguracoesProf(prof) {
+            if (!prof) return;
+
+            if (document.getElementById('c_extraido')) document.getElementById('c_extraido').value = prof.nome;
+            if (document.getElementById('in_extraido')) document.getElementById('in_extraido').value = prof.nome;
+            if (document.getElementById('c_provincia')) document.getElementById('c_provincia').value = prof.provincia;
+            if (document.getElementById('in_provincia')) document.getElementById('in_provincia').value = prof.provincia;
+            if (document.getElementById('c_distrito')) document.getElementById('c_distrito').value = prof.distrito;
+            if (document.getElementById('in_distrito')) document.getElementById('in_distrito').value = prof.distrito;
+
+            if (document.getElementById('hdr_provincia')) document.getElementById('hdr_provincia').innerText = `PROVÍNCIA DE ${prof.provincia.toUpperCase()}`;
+            if (document.getElementById('hdr_distrito')) document.getElementById('hdr_distrito').innerText = `GOVERNO DO DISTRITO DE ${prof.distrito.toUpperCase()}`;
+            if (document.getElementById('hdr_escola')) document.getElementById('hdr_escola').innerText = prof.escola.toUpperCase();
+
+            atualizar();
+        }
+
+        function redefinirDadosProfessor() {
+            if (confirm('Deseja apagar as credenciais do professor gravadas e criar um novo acesso?')) {
+                localStorage.removeItem(PROF_STORAGE_KEY);
+                document.getElementById('prof_pin').value = '';
+                verificarAutenticacao();
+            }
+        }
+
+        /* --- NÚMEROS POR EXTENSO E CÁLCULOS --- */
         const numeroPorExtenso = [
             "Zero", "Um", "Dois", "Três", "Quatro", "Cinco", "Seis", "Sete", "Oito", "Nove", "Dez",
             "Onze", "Doze", "Treze", "Catorze", "Quinze", "Dezasseis", "Dezassete", "Dezoito", "Dezanove", "Vinte"
@@ -1040,7 +950,87 @@
             };
         }
 
+        /* --- GERENCIAMENTO DE DISCIPLINAS FORMULARIO/CERTIFICADO --- */
+        function renderTabelaDisciplinasForm() {
+            const tbody = document.getElementById('discTableBody');
+            tbody.innerHTML = '';
+
+            disciplinasCertificado.forEach((d, index) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="text-align: center;">
+                        <input type="checkbox" ${d.ativa ? 'checked' : ''} onchange="alternarDisciplinaAtiva(${index})">
+                    </td>
+                    <td>
+                        <input type="text" value="${escapeHtml(d.nome)}" onchange="atualizarNomeDisciplina(${index}, this.value)" style="width: 100%; border: none; background: transparent;">
+                    </td>
+                    <td>
+                        <input type="text" value="${escapeHtml(d.nota)}" onchange="atualizarNotaDisciplina(${index}, this.value)" style="width: 100%; border: 1px solid #ccc; padding: 4px; border-radius: 3px;">
+                    </td>
+                    <td style="text-align: center;">
+                        <button type="button" class="btn btn-danger btn-sm" onclick="removerDisciplinaForm(${index})">🗑️</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            atualizar();
+        }
+
+        function alternarDisciplinaAtiva(index) {
+            disciplinasCertificado[index].ativa = !disciplinasCertificado[index].ativa;
+            atualizar();
+        }
+
+        function atualizarNomeDisciplina(index, val) {
+            disciplinasCertificado[index].nome = val.trim();
+            atualizar();
+        }
+
+        function atualizarNotaDisciplina(index, val) {
+            disciplinasCertificado[index].nota = val.trim();
+            atualizar();
+        }
+
+        function removerDisciplinaForm(index) {
+            disciplinasCertificado.splice(index, 1);
+            renderTabelaDisciplinasForm();
+        }
+
+        function adicionarDisciplinaForm() {
+            const nomeInput = document.getElementById('novo_disc_nome');
+            const notaInput = document.getElementById('novo_disc_nota');
+
+            if (!nomeInput.value.trim()) {
+                alert('Indique o nome da disciplina.');
+                return;
+            }
+
+            disciplinasCertificado.push({
+                id: 'custom_' + Date.now(),
+                nome: nomeInput.value.trim(),
+                nota: notaInput.value.trim() || '--',
+                ativa: true
+            });
+
+            nomeInput.value = '';
+            notaInput.value = '';
+            renderTabelaDisciplinasForm();
+        }
+
         function atualizar() {
+            const rawProf = localStorage.getItem(PROF_STORAGE_KEY);
+            const prof = rawProf ? JSON.parse(rawProf) : null;
+
+            let prov = (prof && prof.provincia) ? prof.provincia : (document.getElementById('in_provincia').value || 'GAZA');
+            let dist = (prof && prof.distrito) ? prof.distrito : (document.getElementById('in_distrito').value || 'MANDLAKAZI');
+            let escola = (prof && prof.escola) ? prof.escola : 'ESCOLA PRIMÁRIA DE CHITSONGO';
+            let extraidoProf = (prof && prof.nome) ? prof.nome : (document.getElementById('in_extraido').value || 'Teresa Chivulele');
+
+            if (document.getElementById('hdr_provincia')) document.getElementById('hdr_provincia').innerText = `PROVÍNCIA DE ${prov.toUpperCase()}`;
+            if (document.getElementById('hdr_distrito')) document.getElementById('hdr_distrito').innerText = `GOVERNO DO DISTRITO DE ${dist.toUpperCase()}`;
+            if (document.getElementById('hdr_escola')) document.getElementById('hdr_escola').innerText = escola.toUpperCase();
+
             document.getElementById('out_nome').innerText = document.getElementById('in_nome').value || '--';
             document.getElementById('out_sexo').innerText = document.getElementById('in_sexo').value || '--';
             document.getElementById('out_naturalidade').innerText = document.getElementById('in_naturalidade').value || '--';
@@ -1050,8 +1040,16 @@
             document.getElementById('out_ano').innerText = document.getElementById('in_ano').value || '--';
             document.getElementById('out_comportamento').innerText = document.getElementById('in_comportamento').value || '--';
             document.getElementById('out_resultado').innerText = document.getElementById('in_resultado').value || '--';
-            document.getElementById('out_data_emissao').innerText = document.getElementById('in_data_emissao').value || '--';
-            document.getElementById('out_extraido').innerText = document.getElementById('in_extraido').value || '--';
+            
+            let localDataVal = document.getElementById('in_local_data').value.trim();
+            if (localDataVal) {
+                document.getElementById('out_local_data').innerText = localDataVal;
+            } else {
+                let dataEmissao = document.getElementById('in_data_emissao').value || '27 de Julho de 2026';
+                document.getElementById('out_local_data').innerText = `${dist}, aos ${dataEmissao}`;
+            }
+
+            document.getElementById('out_extraido').innerText = extraidoProf;
             document.getElementById('out_conferido').innerText = document.getElementById('in_conferido').value || '--';
             
             let directora = document.getElementById('in_directora').value || '--';
@@ -1061,44 +1059,41 @@
             let carreira = document.getElementById('in_carreira_directora').value || 'DN3';
             document.getElementById('out_carreira_directora').innerText = carreira;
 
-            let discLP = processarCampoValor(document.getElementById('in_lp').value);
-            let discCN = processarCampoValor(document.getElementById('in_cn').value);
-            let discMAT = processarCampoValor(document.getElementById('in_mat').value);
-            let discCS = processarCampoValor(document.getElementById('in_cs').value);
-            let discEVO = processarCampoValor(document.getElementById('in_evo').value);
-            let discEF = processarCampoValor(document.getElementById('in_ef').value);
-
-            document.getElementById('out_lp_num').innerText = discLP.numDisp;
-            document.getElementById('out_lp_ext').innerText = discLP.extenso;
-
-            document.getElementById('out_cn_num').innerText = discCN.numDisp;
-            document.getElementById('out_cn_ext').innerText = discCN.extenso;
-
-            document.getElementById('out_mat_num').innerText = discMAT.numDisp;
-            document.getElementById('out_mat_ext').innerText = discMAT.extenso;
-
-            document.getElementById('out_cs_num').innerText = discCS.numDisp;
-            document.getElementById('out_cs_ext').innerText = discCS.extenso;
-
-            document.getElementById('out_evo_num').innerText = discEVO.numDisp;
-            document.getElementById('out_evo_ext').innerText = discEVO.extenso;
-
-            document.getElementById('out_ef_num').innerText = discEF.numDisp;
-            document.getElementById('out_ef_ext').innerText = discEF.extenso;
+            // RENDERIZAR TABELA DO CERTIFICADO COM DISCIPLINAS ATIVAS
+            const tbodyNotas = document.getElementById('out_tbody_notas');
+            tbodyNotas.innerHTML = '';
 
             let soma = 0;
             let qtd = 0;
 
-            [discLP, discCN, discMAT, discCS, discEVO, discEF].forEach(d => {
-                if (d.isNumeric) {
-                    soma += d.numVal;
+            disciplinasCertificado.filter(d => d.ativa).forEach(disc => {
+                let parsed = processarCampoValor(disc.nota);
+                if (parsed.isNumeric) {
+                    soma += parsed.numVal;
                     qtd++;
                 }
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${escapeHtml(disc.nome)}</td>
+                    <td class="center">${parsed.numDisp}</td>
+                    <td class="center">${escapeHtml(parsed.extenso)}</td>
+                    <td class="center">Valores</td>
+                `;
+                tbodyNotas.appendChild(tr);
             });
 
             let media = qtd > 0 ? Math.round(soma / qtd) : 0;
-            document.getElementById('out_media_num').innerText = media;
-            document.getElementById('out_media_ext').innerText = getExtenso(media);
+
+            const trMedia = document.createElement('tr');
+            trMedia.className = 'media-row';
+            trMedia.innerHTML = `
+                <td>Média</td>
+                <td class="center">${media}</td>
+                <td class="center">${getExtenso(media)}</td>
+                <td class="center">Valores</td>
+            `;
+            tbodyNotas.appendChild(trMedia);
         }
 
         document.querySelectorAll('#certForm input, #certForm select').forEach(element => {
@@ -1124,9 +1119,7 @@
         function loadAlunos() {
             try {
                 const raw = localStorage.getItem(STORAGE_KEY);
-                if (raw) {
-                    alunos = JSON.parse(raw);
-                }
+                if (raw) alunos = JSON.parse(raw);
             } catch (e) {
                 console.error(e);
             }
@@ -1141,7 +1134,7 @@
         }
 
         function calcMedia(a) {
-            let discList = [a.lp, a.mat, a.cn, a.cs, a.evo, a.ef];
+            let discList = a.disciplinas ? a.disciplinas.filter(d => d.ativa).map(d => d.nota) : [a.lp, a.mat, a.cn, a.cs, a.evo, a.ef];
             let soma = 0;
             let qtd = 0;
             discList.forEach(v => {
@@ -1200,6 +1193,18 @@
             editingId = null;
             document.getElementById('formCadastroTitulo').textContent = 'Novo Aluno';
             document.getElementById('alunoForm').reset();
+
+            const rawProf = localStorage.getItem(PROF_STORAGE_KEY);
+            if (rawProf) {
+                const prof = JSON.parse(rawProf);
+                document.getElementById('c_provincia').value = prof.provincia || '';
+                document.getElementById('c_distrito').value = prof.distrito || '';
+                document.getElementById('c_extraido').value = prof.nome || '';
+                document.getElementById('c_local_data').value = `${prof.distrito || 'Chitsongo'}, aos 27 de Julho de 2026`;
+            } else {
+                document.getElementById('c_local_data').value = 'Chitsongo, aos 27 de Julho de 2026';
+            }
+
             document.getElementById('formCadastro').style.display = 'block';
             document.getElementById('formCadastro').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
@@ -1230,6 +1235,7 @@
                 ef: document.getElementById('c_ef').value.trim(),
                 comportamento: document.getElementById('c_comportamento').value,
                 resultado: document.getElementById('c_resultado').value,
+                local_data: document.getElementById('c_local_data').value.trim(),
                 data_emissao: document.getElementById('c_data_emissao').value.trim(),
                 extraido: document.getElementById('c_extraido').value.trim(),
                 conferido: document.getElementById('c_conferido').value.trim(),
@@ -1260,13 +1266,17 @@
             const a = alunos.find(x => x.id === id);
             if (!a) return;
             editingId = id;
+
+            const rawProf = localStorage.getItem(PROF_STORAGE_KEY);
+            const prof = rawProf ? JSON.parse(rawProf) : null;
+
             document.getElementById('formCadastroTitulo').textContent = 'Editar Aluno';
             document.getElementById('c_nome').value = a.nome || '';
             document.getElementById('c_sexo').value = a.sexo || 'Feminino';
             document.getElementById('c_data_nasc').value = a.data_nasc || '';
             document.getElementById('c_naturalidade').value = a.naturalidade || '';
-            document.getElementById('c_distrito').value = a.distrito || '';
-            document.getElementById('c_provincia').value = a.provincia || '';
+            document.getElementById('c_distrito').value = a.distrito || (prof ? prof.distrito : '');
+            document.getElementById('c_provincia').value = a.provincia || (prof ? prof.provincia : '');
             document.getElementById('c_pai').value = a.pai || '';
             document.getElementById('c_mae').value = a.mae || '';
             document.getElementById('c_bairro').value = a.bairro || '';
@@ -1280,8 +1290,9 @@
             document.getElementById('c_ef').value = a.ef || '';
             document.getElementById('c_comportamento').value = a.comportamento || 'Bom';
             document.getElementById('c_resultado').value = a.resultado || 'Não Admitido';
+            document.getElementById('c_local_data').value = a.local_data || (a.data_emissao ? `${a.distrito || (prof ? prof.distrito : 'Chitsongo')}, aos ${a.data_emissao}` : '');
             document.getElementById('c_data_emissao').value = a.data_emissao || '';
-            document.getElementById('c_extraido').value = a.extraido || '';
+            document.getElementById('c_extraido').value = a.extraido || (prof ? prof.nome : '');
             document.getElementById('c_conferido').value = a.conferido || '';
             document.getElementById('c_directora').value = a.directora || '';
             document.getElementById('c_carreira_directora').value = a.carreira_directora || '';
@@ -1303,23 +1314,52 @@
         }
 
         function construirCertidaoNode(a) {
-            const dLP = processarCampoValor(a.lp);
-            const dCN = processarCampoValor(a.cn);
-            const dMAT = processarCampoValor(a.mat);
-            const dCS = processarCampoValor(a.cs);
-            const dEVO = processarCampoValor(a.evo);
-            const dEF = processarCampoValor(a.ef);
+            const rawProf = localStorage.getItem(PROF_STORAGE_KEY);
+            const prof = rawProf ? JSON.parse(rawProf) : null;
 
+            const provFinal = (prof && prof.provincia) ? prof.provincia : (a.provincia || 'GAZA');
+            const distFinal = (prof && prof.distrito) ? prof.distrito : (a.distrito || 'MANDLAKAZI');
+            const escFinal = (prof && prof.escola) ? prof.escola : 'ESCOLA PRIMÁRIA DE CHITSONGO';
+            const extraidoFinal = (prof && prof.nome) ? prof.nome : (a.extraido || 'Teresa Chivulele');
+
+            const listaDisc = a.disciplinas ? a.disciplinas.filter(d => d.ativa) : [
+                { nome: 'Língua portuguesa', nota: a.lp },
+                { nome: 'Ciências Naturais', nota: a.cn },
+                { nome: 'Matemática', nota: a.mat },
+                { nome: 'Ciências Sociais', nota: a.cs },
+                { nome: 'Educação Visual e Ofícios', nota: a.evo },
+                { nome: 'Educação Física', nota: a.ef }
+            ];
+
+            let rowsHtml = '';
             let soma = 0;
             let qtd = 0;
-            [dLP, dCN, dMAT, dCS, dEVO, dEF].forEach(d => {
-                if (d.isNumeric) {
-                    soma += d.numVal;
+
+            listaDisc.forEach(d => {
+                let parsed = processarCampoValor(d.nota);
+                if (parsed.isNumeric) {
+                    soma += parsed.numVal;
                     qtd++;
                 }
+                rowsHtml += `
+                    <tr>
+                        <td>${escapeHtml(d.nome)}</td>
+                        <td class="center">${parsed.numDisp}</td>
+                        <td class="center">${escapeHtml(parsed.extenso)}</td>
+                        <td class="center">Valores</td>
+                    </tr>`;
             });
 
             const media = qtd > 0 ? Math.round(soma / qtd) : 0;
+            rowsHtml += `
+                <tr class="media-row">
+                    <td>Média</td>
+                    <td class="center">${media}</td>
+                    <td class="center">${getExtenso(media)}</td>
+                    <td class="center">Valores</td>
+                </tr>`;
+
+            const localDataTexto = a.local_data || `${escapeHtml(distFinal)}, aos ${escapeHtml(a.data_emissao || '27 de Julho de 2026')}`;
 
             const div = document.createElement('div');
             div.className = 'certidao-page';
@@ -1328,17 +1368,17 @@
                     <img src="Emblema.svg" class="emblem">
                     <div>
                         <h3>REPÚBLICA DE MOÇAMBIQUE</h3>
-                        <h4>PROVÍNCIA DE ${escapeHtml(a.provincia || 'GAZA')}</h4>
-                        <h4>GOVERNO DO DISTRITO DE ${escapeHtml(a.distrito || 'MANDLAKAZI')}</h4>
+                        <h4>PROVÍNCIA DE ${escapeHtml(provFinal.toUpperCase())}</h4>
+                        <h4>GOVERNO DO DISTRITO DE ${escapeHtml(distFinal.toUpperCase())}</h4>
                         <h5>SERVIÇO DISTRITAL DE EDUCAÇÃO, JUVENTUDE E TECNOLOGIA</h5>
-                        <h5>ESCOLA PRIMÁRIA DE CHITSONGO</h5>
+                        <h5>${escapeHtml(escFinal.toUpperCase())}</h5>
                     </div>
                 </div>
 
                 <div class="doc-title">CERTIDÃO</div>
 
                 <div class="body-text">
-                    <span class="fill bold-field">${escapeHtml(a.directora || 'Laurinda Alberto Zavale Langa')}</span>, Directora da Escola Primária de Chitsongo, certifica em cumprimento do despacho exarado em requerimento que fica arquivado na secretaria desta escola, que <span class="fill bold-field">${escapeHtml(a.nome)}</span>, do sexo <span class="fill">${escapeHtml(a.sexo)}</span>, nascido(a) em <span class="fill">${escapeHtml(a.naturalidade || '--')}</span>, no dia <span class="fill">${escapeHtml(a.data_nasc || '--')}</span>, filho(a) de <span class="fill">${escapeHtml(a.pai || '--')}</span> e de <span class="fill">${escapeHtml(a.mae || '--')}</span>, Concluiu nesta Escola a 6ª classe do Ensino Primário no ano lectivo de <span class="fill">${escapeHtml(a.ano || '2025')}</span> e obteve os seguintes resultados por disciplina:
+                    <span class="fill bold-field">${escapeHtml(a.directora || 'Laurinda Alberto Zavale Langa')}</span>, Directora da Escola, certifica em cumprimento do despacho exarado em requerimento que fica arquivado na secretaria desta escola, que <span class="fill bold-field">${escapeHtml(a.nome)}</span>, do sexo <span class="fill">${escapeHtml(a.sexo)}</span>, nascido(a) em <span class="fill">${escapeHtml(a.naturalidade || '--')}</span>, no dia <span class="fill">${escapeHtml(a.data_nasc || '--')}</span>, filho(a) de <span class="fill">${escapeHtml(a.pai || '--')}</span> e de <span class="fill">${escapeHtml(a.mae || '--')}</span>, Concluiu nesta Escola a 6ª classe do Ensino Primário no ano lectivo de <span class="fill">${escapeHtml(a.ano || '2025')}</span> e obteve os seguintes resultados por disciplina:
                 </div>
 
                 <table class="table-notas">
@@ -1353,15 +1393,7 @@
                             <th style="width: 25%;">Extenso</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr><td>Língua portuguesa</td><td class="center">${dLP.numDisp}</td><td class="center">${dLP.extenso}</td><td class="center">Valores</td></tr>
-                        <tr><td>Ciências Naturais</td><td class="center">${dCN.numDisp}</td><td class="center">${dCN.extenso}</td><td class="center">Valores</td></tr>
-                        <tr><td>Matemática</td><td class="center">${dMAT.numDisp}</td><td class="center">${dMAT.extenso}</td><td class="center">Valores</td></tr>
-                        <tr><td>Ciências Sociais</td><td class="center">${dCS.numDisp}</td><td class="center">${dCS.extenso}</td><td class="center">Valores</td></tr>
-                        <tr><td>Educação Visual e Ofícios</td><td class="center">${dEVO.numDisp}</td><td class="center">${dEVO.extenso}</td><td class="center">Valores</td></tr>
-                        <tr><td>Educação Física</td><td class="center">${dEF.numDisp}</td><td class="center">${escapeHtml(dEF.extenso)}</td><td class="center">Valores</td></tr>
-                        <tr class="media-row"><td>Média</td><td class="center">${media}</td><td class="center">${getExtenso(media)}</td><td class="center">Valores</td></tr>
-                    </tbody>
+                    <tbody>${rowsHtml}</tbody>
                 </table>
 
                 <div class="conclusao-text">
@@ -1369,14 +1401,14 @@
                 </div>
 
                 <div class="location-date">
-                    Chitsongo, aos <span>${escapeHtml(a.data_emissao || '27 de Julho de 2026')}</span>
+                    ${escapeHtml(localDataTexto)}
                 </div>
 
                 <div class="signatures-grid">
                     <div class="signature-col">
                         Extraído por:<br>
                         <div class="signature-line"></div>
-                        <span>${escapeHtml(a.extraido || 'Teresa Chivulele')}</span>
+                        <span>${escapeHtml(extraidoFinal)}</span>
                     </div>
                     <div class="signature-col">
                         Conferido Por:<br>
@@ -1431,7 +1463,7 @@
             const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = url;
-            link.download = 'cadastro_alunos_chitsongo.json';
+            link.download = 'cadastro_alunos.json';
             link.click();
             URL.revokeObjectURL(url);
         }
@@ -1475,6 +1507,9 @@
                             return;
                         }
 
+                        const rawProf = localStorage.getItem(PROF_STORAGE_KEY);
+                        const prof = rawProf ? JSON.parse(rawProf) : null;
+
                         const novosAlunos = rows.map(r => {
                             const getVal = (...keys) => {
                                 for (let k of keys) {
@@ -1487,14 +1522,18 @@
                                 return '';
                             };
 
+                            const distVal = getVal('distrito') || (prof ? prof.distrito : 'Chitsongo');
+                            const dataEmissaoVal = getVal('data de emissão', 'data emissao', 'emissão') || '27 de Julho de 2026';
+                            const localDataVal = getVal('local e data', 'local/data', 'local_data', 'local e data de emissão') || `${distVal}, aos ${dataEmissaoVal}`;
+
                             return {
                                 id: gerarId(),
                                 nome: getVal('nome', 'nome completo', 'aluno', 'nome do aluno'),
                                 sexo: getVal('sexo', 'gênero', 'genero') || 'Feminino',
                                 data_nasc: getVal('data de nascimento', 'data nascimento', 'nascimento', 'data_nasc'),
                                 naturalidade: getVal('naturalidade', 'natural'),
-                                distrito: getVal('distrito'),
-                                provincia: getVal('província', 'provincia'),
+                                distrito: distVal,
+                                provincia: getVal('província', 'provincia') || (prof ? prof.provincia : ''),
                                 pai: getVal('pai', 'nome do pai'),
                                 mae: getVal('mãe', 'mae', 'nome da mãe'),
                                 bairro: getVal('bairro'),
@@ -1508,8 +1547,9 @@
                                 comportamento: getVal('comportamento') || 'Bom',
                                 resultado: getVal('resultado') || 'Não Admitido',
                                 ano: getVal('ano', 'ano lectivo') || '2025',
-                                data_emissao: getVal('data de emissão', 'data emissao', 'emissão') || '27 de Julho de 2026',
-                                extraido: getVal('extraído por', 'extraido por', 'extraido') || 'Teresa Chivulele',
+                                local_data: localDataVal,
+                                data_emissao: dataEmissaoVal,
+                                extraido: getVal('extraído por', 'extraido por', 'extraido') || (prof ? prof.nome : 'Teresa Chivulele'),
                                 conferido: getVal('conferido por', 'conferido') || 'Paulo Sithole',
                                 directora: getVal('directora', 'directora da escola') || 'Laurinda Alberto Zavale Langa',
                                 carreira_directora: getVal('carreira', 'carreira directora') || 'DN3'
@@ -1517,7 +1557,7 @@
                         }).filter(a => a.nome !== '');
 
                         if (!novosAlunos.length) {
-                            alert('Nenhum aluno válido encontrado na planilha. Certifique-se de que a coluna se chama "Nome" ou "Nome Completo".');
+                            alert('Nenhum aluno válido encontrado na planilha.');
                             return;
                         }
 
@@ -1531,11 +1571,11 @@
                 };
                 reader.readAsArrayBuffer(file);
             } else {
-                alert('Formato não suportado. Por favor use um ficheiro Excel (.xlsx, .xls, .csv) ou JSON.');
+                alert('Formato não suportado. Use um ficheiro Excel (.xlsx, .xls, .csv) ou JSON.');
             }
         }
 
-        /* CONFIGURAÇÃO DRAG & DROP (ARRASTAR E LARGAR) */
+        /* CONFIGURAÇÃO DRAG & DROP */
         let dragCounter = 0;
 
         window.addEventListener('dragenter', (e) => {
@@ -1547,57 +1587,53 @@
         window.addEventListener('dragleave', (e) => {
             e.preventDefault();
             dragCounter--;
-            if (dragCounter === 0) {
-                document.body.classList.remove('drag-over');
-            }
+            if (dragCounter === 0) document.body.classList.remove('drag-over');
         });
 
-        window.addEventListener('dragover', (e) => {
-            e.preventDefault();
-        });
+        window.addEventListener('dragover', (e) => e.preventDefault());
 
         window.addEventListener('drop', (e) => {
             e.preventDefault();
             dragCounter = 0;
             document.body.classList.remove('drag-over');
-            
             if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
                 lerFicheiro(e.dataTransfer.files[0]);
             }
         });
 
         function guardarIndividualNoCadastro() {
+            const rawProf = localStorage.getItem(PROF_STORAGE_KEY);
+            const prof = rawProf ? JSON.parse(rawProf) : null;
+
             const dados = {
+                id: gerarId(),
                 nome: document.getElementById('in_nome').value.trim(),
                 sexo: document.getElementById('in_sexo').value,
                 data_nasc: document.getElementById('in_data_nasc').value.trim(),
                 naturalidade: document.getElementById('in_naturalidade').value.trim(),
-                distrito: document.getElementById('in_distrito').value.trim(),
-                provincia: document.getElementById('in_provincia').value.trim(),
+                distrito: document.getElementById('in_distrito').value.trim() || (prof ? prof.distrito : ''),
+                provincia: document.getElementById('in_provincia').value.trim() || (prof ? prof.provincia : ''),
                 pai: document.getElementById('in_pai').value.trim(),
                 mae: document.getElementById('in_mae').value.trim(),
                 bairro: document.getElementById('in_bairro').value.trim(),
                 morada: document.getElementById('in_morada').value.trim(),
                 ano: document.getElementById('in_ano').value.trim(),
-                lp: document.getElementById('in_lp').value.trim(),
-                mat: document.getElementById('in_mat').value.trim(),
-                cn: document.getElementById('in_cn').value.trim(),
-                cs: document.getElementById('in_cs').value.trim(),
-                evo: document.getElementById('in_evo').value.trim(),
-                ef: document.getElementById('in_ef').value.trim(),
+                disciplinas: JSON.parse(JSON.stringify(disciplinasCertificado)),
                 comportamento: document.getElementById('in_comportamento').value,
                 resultado: document.getElementById('in_resultado').value,
+                local_data: document.getElementById('in_local_data').value.trim(),
                 data_emissao: document.getElementById('in_data_emissao').value.trim(),
-                extraido: document.getElementById('in_extraido').value.trim(),
+                extraido: document.getElementById('in_extraido').value.trim() || (prof ? prof.nome : ''),
                 conferido: document.getElementById('in_conferido').value.trim(),
                 directora: document.getElementById('in_directora').value.trim(),
-                carreira_directora: document.getElementById('in_carreira_directora').value.trim(),
-                id: gerarId()
+                carreira_directora: document.getElementById('in_carreira_directora').value.trim()
             };
+
             if (!dados.nome) {
                 alert('Indique o nome do aluno antes de guardar no cadastro.');
                 return;
             }
+
             alunos.push(dados);
             saveAlunos();
             renderTabela();
@@ -1619,31 +1655,45 @@
             if (!id) return;
             const a = alunos.find(x => x.id === id);
             if (!a) return;
+
+            const rawProf = localStorage.getItem(PROF_STORAGE_KEY);
+            const prof = rawProf ? JSON.parse(rawProf) : null;
+
             document.getElementById('in_nome').value = a.nome || '';
             document.getElementById('in_sexo').value = a.sexo || 'Feminino';
             document.getElementById('in_data_nasc').value = a.data_nasc || '';
             document.getElementById('in_naturalidade').value = a.naturalidade || '';
-            document.getElementById('in_distrito').value = a.distrito || '';
-            document.getElementById('in_provincia').value = a.provincia || '';
+            document.getElementById('in_distrito').value = (prof && prof.distrito) ? prof.distrito : (a.distrito || '');
+            document.getElementById('in_provincia').value = (prof && prof.provincia) ? prof.provincia : (a.provincia || '');
             document.getElementById('in_pai').value = a.pai || '';
             document.getElementById('in_mae').value = a.mae || '';
             document.getElementById('in_bairro').value = a.bairro || '';
             document.getElementById('in_morada').value = a.morada || '';
             document.getElementById('in_ano').value = a.ano || '';
-            document.getElementById('in_lp').value = a.lp || '';
-            document.getElementById('in_mat').value = a.mat || '';
-            document.getElementById('in_cn').value = a.cn || '';
-            document.getElementById('in_cs').value = a.cs || '';
-            document.getElementById('in_evo').value = a.evo || '';
-            document.getElementById('in_ef').value = a.ef || '';
+
+            if (a.disciplinas && Array.isArray(a.disciplinas)) {
+                disciplinasCertificado = JSON.parse(JSON.stringify(a.disciplinas));
+            } else {
+                disciplinasCertificado = [
+                    { id: 'lp', nome: 'Língua portuguesa', nota: a.lp || '--', ativa: true },
+                    { id: 'cn', nome: 'Ciências Naturais', nota: a.cn || '--', ativa: true },
+                    { id: 'mat', nome: 'Matemática', nota: a.mat || '--', ativa: true },
+                    { id: 'cs', nome: 'Ciências Sociais', nota: a.cs || '--', ativa: true },
+                    { id: 'evo', nome: 'Educação Visual e Ofícios', nota: a.evo || '--', ativa: true },
+                    { id: 'ef', nome: 'Educação Física', nota: a.ef || '--', ativa: true }
+                ];
+            }
+
             document.getElementById('in_comportamento').value = a.comportamento || 'Bom';
             document.getElementById('in_resultado').value = a.resultado || 'Não Admitido';
+            document.getElementById('in_local_data').value = a.local_data || (a.data_emissao ? `${prof ? prof.distrito : (a.distrito || 'Chitsongo')}, aos ${a.data_emissao}` : 'Chitsongo, aos 27 de Julho de 2026');
             document.getElementById('in_data_emissao').value = a.data_emissao || '';
-            document.getElementById('in_extraido').value = a.extraido || '';
+            document.getElementById('in_extraido').value = (prof && prof.nome) ? prof.nome : (a.extraido || '');
             document.getElementById('in_conferido').value = a.conferido || '';
             document.getElementById('in_directora').value = a.directora || '';
             document.getElementById('in_carreira_directora').value = a.carreira_directora || '';
-            atualizar();
+
+            renderTabelaDisciplinasForm();
         }
 
         function switchTab(tab) {
@@ -1657,10 +1707,9 @@
             btn.addEventListener('click', () => switchTab(btn.dataset.tab));
         });
 
-        /* REGISTO DO SERVICE WORKER COM ATUALIZAÇÃO AUTOMÁTICA DA PÁGINA */
+        /* REGISTO DO SERVICE WORKER */
         if ('serviceWorker' in navigator) {
             let refreshing = false;
-
             navigator.serviceWorker.addEventListener('controllerchange', () => {
                 if (!refreshing) {
                     refreshing = true;
@@ -1669,16 +1718,18 @@
             });
 
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js').then((reg) => {
-                    reg.update();
-                }).catch(err => console.log('Erro ao registrar Service Worker:', err));
+                navigator.serviceWorker.register('./sw.js').then((reg) => reg.update()).catch(err => console.log('Erro SW:', err));
             });
         }
 
-        loadAlunos();
-        renderTabela();
-        switchTab('cadastro');
-        atualizar();
+        /* INICIALIZAÇÃO DA PÁGINA */
+        window.addEventListener('DOMContentLoaded', () => {
+            loadAlunos();
+            renderTabela();
+            renderTabelaDisciplinasForm();
+            switchTab('cadastro');
+            verificarAutenticacao();
+        });
     </script>
 </body>
 </html>
