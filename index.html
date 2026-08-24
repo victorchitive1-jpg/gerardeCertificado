@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerador de Certidão e Declaração - Escola Primária de Chitsongo</title>
+    <title>Gerador de Certidão e Declaração - Ensino Primario</title>
 
     <!-- Configurações PWA -->
     <link rel="manifest" href="manifest.json">
@@ -59,6 +59,95 @@
             margin-top: 0;
             color: #003366;
             text-align: center;
+        }
+
+        /* Modal de Edição em Massa */
+        .edicao-massa-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 51, 102, 0.85);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            font-family: Arial, sans-serif;
+        }
+
+        .edicao-massa-card {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 420px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .edicao-massa-card h3 {
+            margin-top: 0;
+            color: #003366;
+        }
+
+        .edicao-massa-info {
+            font-size: 13px;
+            color: #444;
+            margin-bottom: 18px;
+        }
+
+        /* Modal de Pré-visualização de Emissão em Massa */
+        .previa-emissao-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 51, 102, 0.85);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            font-family: Arial, sans-serif;
+        }
+
+        .previa-emissao-card {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 480px;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .previa-emissao-card h3 {
+            margin-top: 0;
+            color: #003366;
+        }
+
+        .previa-emissao-lista {
+            list-style: none;
+            margin: 0 0 18px 0;
+            padding: 0;
+            overflow-y: auto;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+        }
+
+        .previa-emissao-lista li {
+            padding: 8px 12px;
+            font-size: 13px;
+            border-bottom: 1px solid #eef1f5;
+        }
+
+        .previa-emissao-lista li:last-child { border-bottom: none; }
+
+        .previa-classe {
+            color: #666;
+            font-size: 12px;
         }
 
         .pin-field {
@@ -322,6 +411,27 @@
 
         .acoes-col { white-space: nowrap; text-align: center; }
 
+        .status-emitido {
+            color: #1a7a3c;
+            font-size: 11px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .status-emitido small {
+            font-weight: normal;
+            color: #4a4a4a;
+        }
+
+        .status-nao-emitido {
+            color: #999;
+        }
+
+        .nota-icon {
+            cursor: help;
+            font-size: 12px;
+        }
+
         .btn-icon {
             border: none;
             background: none;
@@ -393,6 +503,13 @@
             margin: 14px 0;
             letter-spacing: 2px;
             text-decoration: underline;
+        }
+
+        .registo-numero {
+            text-align: right;
+            font-size: 10.5pt;
+            margin: -8px 0 10px 0;
+            font-weight: bold;
         }
 
         .body-text {
@@ -515,7 +632,7 @@
         @media print {
             @page { size: A4 portrait; margin: 0; }
             html, body { width: 210mm; height: 297mm; margin: 0; padding: 0; background: white; }
-            .no-print, .login-overlay { display: none !important; }
+            .no-print, .login-overlay, .edicao-massa-overlay, .previa-emissao-overlay { display: none !important; }
             body.mode-mass .single-preview { display: none !important; }
             body.mode-mass .mass-only { display: block !important; }
             body:not(.mode-mass) .mass-only { display: none !important; }
@@ -584,6 +701,38 @@
         <span>📄 Solte o ficheiro Excel (.xlsx, .xls) ou JSON aqui para importar</span>
     </div>
 
+    <!-- Modal de Edição em Massa (Classe / Ano Lectivo) -->
+    <div class="edicao-massa-overlay" id="modalEdicaoMassa" style="display:none;">
+        <div class="edicao-massa-card">
+            <h3>🗂️ Editar Classe / Ano em Massa</h3>
+            <p id="edicaoMassaInfo" class="edicao-massa-info"></p>
+            <div class="form-group" style="margin-bottom: 12px;">
+                <label>Nova Classe (deixe em branco para não alterar)</label>
+                <input type="text" id="massa_classe" placeholder="Ex: 6ª">
+            </div>
+            <div class="form-group" style="margin-bottom: 18px;">
+                <label>Novo Ano Lectivo (deixe em branco para não alterar)</label>
+                <input type="text" id="massa_ano" placeholder="Ex: 2025">
+            </div>
+            <div class="btn-container">
+                <button type="button" class="btn btn-secondary" onclick="fecharEdicaoMassa()">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="aplicarEdicaoMassa()">Aplicar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Pré-visualização antes da Emissão em Massa -->
+    <div class="previa-emissao-overlay" id="modalPreviaEmissao" style="display:none;">
+        <div class="previa-emissao-card">
+            <h3 id="previaEmissaoTitulo">Confirmar Emissão</h3>
+            <ul class="previa-emissao-lista" id="previaEmissaoLista"></ul>
+            <div class="btn-container">
+                <button type="button" class="btn btn-secondary" onclick="fecharPreviaEmissao()">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="confirmarPreviaEmissao()">✔️ Confirmar e Imprimir</button>
+            </div>
+        </div>
+    </div>
+
     <datalist id="opcoes_ef">
         <option value="Não satisfatório">
         <option value="Satisfatório">
@@ -609,6 +758,7 @@
                 <button type="button" class="btn btn-primary" onclick="abrirFormNovo()">➕ Novo Aluno</button>
                 <button type="button" class="btn btn-success" onclick="emitirEmMassa('certidao')">🖨️ Emitir Certidões em Massa</button>
                 <button type="button" class="btn btn-success" style="background-color: #2b5876;" onclick="emitirEmMassa('declaracao')">📜 Emitir Declarações em Massa</button>
+                <button type="button" class="btn btn-secondary" onclick="abrirEdicaoMassa()">🗂️ Editar Classe/Ano em Massa</button>
                 <button type="button" class="btn btn-secondary" onclick="exportarJSON()">⬇️ Exportar Cadastro</button>
                 <button type="button" class="btn btn-secondary" onclick="abrirTelaLoginAjustes()">👤 Professor / Perfil</button>
                 <label class="btn btn-secondary" style="cursor:pointer; margin-bottom:0;">
@@ -680,6 +830,12 @@
                         <div class="form-group"><label>Conferido Por</label><input type="text" id="c_conferido"></div>
                         <div class="form-group"><label>Directora da Escola</label><input type="text" id="c_directora" value="Laurinda Alberto Zavale Langa"></div>
                         <div class="form-group"><label>Carreira / Categoria</label><input type="text" id="c_carreira_directora" placeholder="Ex: DN3"></div>
+
+                        <div class="section-title">Observações</div>
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label>Notas / Casos Especiais (uso interno, não sai impresso)</label>
+                            <textarea id="c_observacoes" rows="3" placeholder="Ex: irmão gémeo de outro aluno, documento pendente, etc." style="padding:8px 10px; border:1px solid #ccc; border-radius:4px; font-size:14px; font-family:Arial, sans-serif; resize:vertical;"></textarea>
+                        </div>
                     </div>
                 </form>
                 <div class="btn-container">
@@ -689,6 +845,10 @@
             </div>
 
             <div class="filtro-toolbar">
+                <div class="form-group">
+                    <label>Pesquisar por Nome</label>
+                    <input type="text" id="buscaNome" placeholder="Digite o nome do aluno..." oninput="renderTabela()">
+                </div>
                 <div class="form-group">
                     <label>Filtrar por Ano Lectivo</label>
                     <select id="filtroAno" onchange="renderTabela()">
@@ -732,6 +892,9 @@
                             <th>Comportamento</th>
                             <th>Média</th>
                             <th>Resultado</th>
+                            <th style="text-align:center;">Certidão</th>
+                            <th style="text-align:center;">Declaração</th>
+                            <th style="text-align:center;">Última Edição</th>
                             <th style="text-align:center;">Ações</th>
                         </tr>
                     </thead>
@@ -1525,6 +1688,91 @@
             return 'a_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
         }
 
+        function formatarDataCurta(d) {
+            const dia = String(d.getDate()).padStart(2, '0');
+            const mes = String(d.getMonth() + 1).padStart(2, '0');
+            const ano = d.getFullYear();
+            return `${dia}/${mes}/${ano}`;
+        }
+
+        function formatarDataHoraCurta(d) {
+            const hh = String(d.getHours()).padStart(2, '0');
+            const mm = String(d.getMinutes()).padStart(2, '0');
+            return `${formatarDataCurta(d)} ${hh}:${mm}`;
+        }
+
+        function distanciaLevenshtein(a, b) {
+            const m = a.length, n = b.length;
+            if (m === 0) return n;
+            if (n === 0) return m;
+            const dp = Array.from({ length: m + 1 }, () => new Array(n + 1).fill(0));
+            for (let i = 0; i <= m; i++) dp[i][0] = i;
+            for (let j = 0; j <= n; j++) dp[0][j] = j;
+            for (let i = 1; i <= m; i++) {
+                for (let j = 1; j <= n; j++) {
+                    const custo = a[i - 1] === b[j - 1] ? 0 : 1;
+                    dp[i][j] = Math.min(
+                        dp[i - 1][j] + 1,
+                        dp[i][j - 1] + 1,
+                        dp[i - 1][j - 1] + custo
+                    );
+                }
+            }
+            return dp[m][n];
+        }
+
+        function similaridadeNomes(nomeA, nomeB) {
+            const n1 = normalizarTexto(nomeA);
+            const n2 = normalizarTexto(nomeB);
+            if (!n1 || !n2) return 0;
+            if (n1 === n2) return 1;
+            const dist = distanciaLevenshtein(n1, n2);
+            const maxLen = Math.max(n1.length, n2.length);
+            return maxLen ? 1 - (dist / maxLen) : 0;
+        }
+
+        function encontrarPossivelDuplicado(nome, idExcluir) {
+            const LIMIAR_SEMELHANCA = 0.82;
+            let melhor = null;
+            let melhorScore = 0;
+            alunos.forEach(a => {
+                if (idExcluir && a.id === idExcluir) return;
+                const score = similaridadeNomes(nome, a.nome);
+                if (score >= LIMIAR_SEMELHANCA && score > melhorScore) {
+                    melhorScore = score;
+                    melhor = a;
+                }
+            });
+            return melhor;
+        }
+
+        const NUM_STORAGE_KEY = 'numeracao_chitsongo_v1';
+
+        function obterNumeracao() {
+            try {
+                const raw = localStorage.getItem(NUM_STORAGE_KEY);
+                return raw ? JSON.parse(raw) : { certidao: 0, declaracao: 0 };
+            } catch (e) {
+                return { certidao: 0, declaracao: 0 };
+            }
+        }
+
+        function obterProximoNumero(tipo) {
+            const num = obterNumeracao();
+            num[tipo] = (num[tipo] || 0) + 1;
+            try {
+                localStorage.setItem(NUM_STORAGE_KEY, JSON.stringify(num));
+            } catch (e) {
+                alert('Erro ao guardar a numeração no navegador.');
+            }
+            return num[tipo];
+        }
+
+        function formatarStatusEmissao(info) {
+            if (!info || !info.numero) return '<span class="status-nao-emitido">—</span>';
+            return `<span class="status-emitido">✅ Nº ${escapeHtml(String(info.numero))}<br><small>${escapeHtml(info.data || '')}</small></span>`;
+        }
+
         function loadAlunos() {
             try {
                 const raw = localStorage.getItem(STORAGE_KEY);
@@ -1577,25 +1825,80 @@
             selClasse.value = classes.includes(vClasse) ? vClasse : '';
         }
 
+        function normalizarTexto(str) {
+            return (str || '').toString().normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+        }
+
         function getAlunosFiltrados() {
             const selAno = document.getElementById('filtroAno');
             const selClasse = document.getElementById('filtroClasse');
+            const inputBusca = document.getElementById('buscaNome');
             const filtroAno = selAno ? selAno.value : '';
             const filtroClasse = selClasse ? selClasse.value : '';
+            const termoBusca = inputBusca ? normalizarTexto(inputBusca.value) : '';
 
             return alunos.filter(a => {
                 const okAno = !filtroAno || (a.ano || '').trim() === filtroAno;
                 const okClasse = !filtroClasse || (a.classe || '').trim() === filtroClasse;
-                return okAno && okClasse;
+                const okBusca = !termoBusca || normalizarTexto(a.nome).includes(termoBusca);
+                return okAno && okClasse && okBusca;
             });
         }
 
         function limparFiltrosCadastro() {
             const selAno = document.getElementById('filtroAno');
             const selClasse = document.getElementById('filtroClasse');
+            const inputBusca = document.getElementById('buscaNome');
             if (selAno) selAno.value = '';
             if (selClasse) selClasse.value = '';
+            if (inputBusca) inputBusca.value = '';
             renderTabela();
+        }
+
+        function abrirEdicaoMassa() {
+            const idsSelecionados = Array.from(document.querySelectorAll('.rowCheck:checked')).map(cb => cb.dataset.id);
+            if (!idsSelecionados.length) {
+                alert('Seleccione pelo menos um aluno na tabela (caixas de selecção) antes de editar em massa. Pode usar os filtros para encontrar a turma pretendida.');
+                return;
+            }
+            document.getElementById('massa_classe').value = '';
+            document.getElementById('massa_ano').value = '';
+            document.getElementById('edicaoMassaInfo').textContent = `${idsSelecionados.length} aluno(s) seleccionado(s) na tabela serão actualizados.`;
+            document.getElementById('modalEdicaoMassa').style.display = 'flex';
+        }
+
+        function fecharEdicaoMassa() {
+            document.getElementById('modalEdicaoMassa').style.display = 'none';
+        }
+
+        function aplicarEdicaoMassa() {
+            const idsSelecionados = Array.from(document.querySelectorAll('.rowCheck:checked')).map(cb => cb.dataset.id);
+            if (!idsSelecionados.length) {
+                fecharEdicaoMassa();
+                return;
+            }
+
+            const novaClasse = document.getElementById('massa_classe').value.trim();
+            const novoAno = document.getElementById('massa_ano').value.trim();
+
+            if (!novaClasse && !novoAno) {
+                alert('Indique pelo menos a nova Classe ou o novo Ano Lectivo.');
+                return;
+            }
+
+            if (!confirm(`Confirma a actualização de ${idsSelecionados.length} aluno(s)?`)) return;
+
+            alunos.forEach(a => {
+                if (idsSelecionados.includes(a.id)) {
+                    if (novaClasse) a.classe = novaClasse;
+                    if (novoAno) a.ano = novoAno;
+                }
+            });
+
+            saveAlunos();
+            renderTabela();
+            fecharEdicaoMassa();
+            alert('Aluno(s) actualizado(s) com sucesso!');
         }
 
         function renderTabela() {
@@ -1635,7 +1938,7 @@
                 tr.innerHTML = `
                     <td><input type="checkbox" class="rowCheck" data-id="${a.id}" checked></td>
                     <td>${index + 1}</td>
-                    <td>${escapeHtml(a.nome)}</td>
+                    <td>${escapeHtml(a.nome)}${a.observacoes ? ` <span class="nota-icon" title="${escapeHtml(a.observacoes).replace(/"/g, '&quot;')}">📝</span>` : ''}</td>
                     <td>${escapeHtml(a.sexo)}</td>
                     <td>${escapeHtml(a.data_nasc)}</td>
                     <td>${escapeHtml(a.naturalidade)}</td>
@@ -1654,6 +1957,9 @@
                     <td>${escapeHtml(a.comportamento)}</td>
                     <td style="text-align:center; font-weight:bold;">${calcMedia(a)}</td>
                     <td>${escapeHtml(a.resultado)}</td>
+                    <td style="text-align:center;">${formatarStatusEmissao(a.certidao_emitida)}</td>
+                    <td style="text-align:center;">${formatarStatusEmissao(a.declaracao_emitida)}</td>
+                    <td style="text-align:center; font-size:11px;" title="${a.criado_em ? 'Criado em: ' + escapeHtml(formatarDataHoraCurta(new Date(a.criado_em))) : ''}">${a.atualizado_em ? escapeHtml(formatarDataHoraCurta(new Date(a.atualizado_em))) : '—'}</td>
                     <td class="acoes-col">
                         <button type="button" class="btn-icon" title="Emitir certidão" onclick="emitirIndividualDoCadastro('${a.id}', 'certidao')">🖨️</button>
                         <button type="button" class="btn-icon" title="Emitir declaração" onclick="emitirIndividualDoCadastro('${a.id}', 'declaracao')">📜</button>
@@ -1720,6 +2026,7 @@
                 conferido: document.getElementById('c_conferido').value.trim(),
                 directora: document.getElementById('c_directora').value.trim(),
                 carreira_directora: document.getElementById('c_carreira_directora').value.trim(),
+                observacoes: document.getElementById('c_observacoes').value.trim(),
             };
         }
 
@@ -1729,11 +2036,23 @@
                 alert('Indique o nome completo do aluno.');
                 return;
             }
+
+            const duplicado = encontrarPossivelDuplicado(dados.nome, editingId);
+            if (duplicado) {
+                const continuar = confirm(`Já existe um aluno com nome semelhante cadastrado:\n"${duplicado.nome}" (${duplicado.classe || '--'}, ${duplicado.ano || '--'})\n\nDeseja continuar e guardar mesmo assim?`);
+                if (!continuar) return;
+            }
+
+            const agora = new Date().toISOString();
             if (editingId) {
                 const idx = alunos.findIndex(a => a.id === editingId);
-                if (idx > -1) alunos[idx] = { ...alunos[idx], ...dados };
+                if (idx > -1) {
+                    alunos[idx] = { ...alunos[idx], ...dados, criado_em: alunos[idx].criado_em || agora, atualizado_em: agora };
+                }
             } else {
                 dados.id = gerarId();
+                dados.criado_em = agora;
+                dados.atualizado_em = agora;
                 alunos.push(dados);
             }
             saveAlunos();
@@ -1777,6 +2096,7 @@
             document.getElementById('c_conferido').value = a.conferido || '';
             document.getElementById('c_directora').value = a.directora || 'Laurinda Alberto Zavale Langa';
             document.getElementById('c_carreira_directora').value = a.carreira_directora || 'DN3';
+            document.getElementById('c_observacoes').value = a.observacoes || '';
             document.getElementById('formCadastro').style.display = 'block';
             document.getElementById('formCadastro').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
@@ -1794,7 +2114,7 @@
             document.querySelectorAll('.rowCheck').forEach(cb => cb.checked = checkbox.checked);
         }
 
-        function construirCertidaoNode(a) {
+        function construirCertidaoNode(a, numero) {
             const rawProf = localStorage.getItem(PROF_STORAGE_KEY);
             const prof = rawProf ? JSON.parse(rawProf) : null;
 
@@ -1857,6 +2177,7 @@
                 </div>
 
                 <div class="doc-title">CERTIDÃO</div>
+                ${numero ? `<div class="registo-numero">Nº ${escapeHtml(String(numero).padStart(4, '0'))}/${new Date().getFullYear()}</div>` : ''}
 
                 <div class="body-text">
                     <span class="fill bold-field">${escapeHtml(a.directora || 'Laurinda Alberto Zavale Langa')}</span>, Directora da Escola, certifica em cumprimento do despacho exarado em requerimento que fica arquivado na secretaria desta escola, que <span class="fill bold-field">${escapeHtml(a.nome)}</span>, do sexo <span class="fill">${escapeHtml(a.sexo)}</span>, nascido(a) em <span class="fill">${escapeHtml(a.naturalidade || '--')}</span>, no dia <span class="fill">${escapeHtml(a.data_nasc || '--')}</span>, filho(a) de <span class="fill">${escapeHtml(a.pai || '--')}</span> e de <span class="fill">${escapeHtml(a.mae || '--')}</span>, Concluiu nesta Escola a ${escapeHtml(a.classe || '6ª')} classe do Ensino Primário no ano lectivo de <span class="fill">${escapeHtml(a.ano || '2025')}</span> e obteve os seguintes resultados por disciplina:
@@ -1907,7 +2228,7 @@
             return div;
         }
 
-        function construirDeclaracaoNode(a) {
+        function construirDeclaracaoNode(a, numero) {
             const rawProf = localStorage.getItem(PROF_STORAGE_KEY);
             const prof = rawProf ? JSON.parse(rawProf) : null;
 
@@ -1980,6 +2301,7 @@
                 </div>
 
                 <div class="doc-title">DECLARAÇÃO DE NOTAS</div>
+                ${numero ? `<div class="registo-numero">Nº ${escapeHtml(String(numero).padStart(4, '0'))}/${new Date().getFullYear()}</div>` : ''}
 
                 <div class="body-text">
                     <span class="fill bold-field">${escapeHtml(a.directora || 'Laurinda Alberto Zavale Langa')}</span>, Directora da Escola Primária de Chitsongo, declara em cumprimento do despacho exarado em requerimento que fica arquivado na secretaria desta escola, que <span class="fill bold-field">${escapeHtml(a.nome)}</span>, do sexo <span class="fill">${escapeHtml(a.sexo)}</span>, nascido em <span class="fill">${escapeHtml(a.naturalidade || '--')}</span>, no dia <span class="fill">${escapeHtml(a.data_nasc || '--')}</span>, filho de <span class="fill">${escapeHtml(a.pai || '--')}</span> e de <span class="fill">${escapeHtml(a.mae || '--')}</span>, prestou as avaliações da <span class="fill">${escapeHtml(a.classe || '5ª')}</span> classe do Ensino Primário no ano lectivo de <span class="fill">${escapeHtml(a.ano || '2024')}</span> e obteve os seguintes resultados por disciplina:
@@ -2017,6 +2339,8 @@
             return div;
         }
 
+        let previaEmissaoPendente = null;
+
         function emitirEmMassa(tipo = 'certidao') {
             const idsSelecionados = Array.from(document.querySelectorAll('.rowCheck:checked')).map(cb => cb.dataset.id);
             const selecionados = alunos.filter(a => idsSelecionados.includes(a.id));
@@ -2024,15 +2348,45 @@
                 alert('Selecione pelo menos um aluno para emitir em massa.');
                 return;
             }
+            abrirPreviaEmissao(tipo, selecionados);
+        }
+
+        function abrirPreviaEmissao(tipo, selecionados) {
+            previaEmissaoPendente = { tipo, selecionados };
+            const tituloTipo = tipo === 'declaracao' ? 'Declaração(ões) de Passagem' : 'Certidão(ões) de Habilitações';
+            document.getElementById('previaEmissaoTitulo').textContent = `Confirmar Emissão de ${selecionados.length} ${tituloTipo}`;
+            document.getElementById('previaEmissaoLista').innerHTML = selecionados
+                .map((a, i) => `<li>${i + 1}. ${escapeHtml(a.nome)} <span class="previa-classe">(${escapeHtml(a.classe || '--')} - ${escapeHtml(a.ano || '--')})</span></li>`)
+                .join('');
+            document.getElementById('modalPreviaEmissao').style.display = 'flex';
+        }
+
+        function fecharPreviaEmissao() {
+            document.getElementById('modalPreviaEmissao').style.display = 'none';
+            previaEmissaoPendente = null;
+        }
+
+        function confirmarPreviaEmissao() {
+            if (!previaEmissaoPendente) return;
+            const { tipo, selecionados } = previaEmissaoPendente;
             const container = document.getElementById('massPrintContainer');
             container.innerHTML = '';
+            const dataEmissaoTexto = formatarDataCurta(new Date());
+
             selecionados.forEach(a => {
+                const numero = obterProximoNumero(tipo);
                 if (tipo === 'declaracao') {
-                    container.appendChild(construirDeclaracaoNode(a));
+                    container.appendChild(construirDeclaracaoNode(a, numero));
+                    a.declaracao_emitida = { numero, data: dataEmissaoTexto };
                 } else {
-                    container.appendChild(construirCertidaoNode(a));
+                    container.appendChild(construirCertidaoNode(a, numero));
+                    a.certidao_emitida = { numero, data: dataEmissaoTexto };
                 }
             });
+
+            saveAlunos();
+            renderTabela();
+            fecharPreviaEmissao();
             document.body.classList.add('mode-mass');
             window.print();
         }
@@ -2042,11 +2396,17 @@
             if (!a) return;
             const container = document.getElementById('massPrintContainer');
             container.innerHTML = '';
+            const numero = obterProximoNumero(tipo);
+            const dataEmissaoTexto = formatarDataCurta(new Date());
             if (tipo === 'declaracao') {
-                container.appendChild(construirDeclaracaoNode(a));
+                container.appendChild(construirDeclaracaoNode(a, numero));
+                a.declaracao_emitida = { numero, data: dataEmissaoTexto };
             } else {
-                container.appendChild(construirCertidaoNode(a));
+                container.appendChild(construirCertidaoNode(a, numero));
+                a.certidao_emitida = { numero, data: dataEmissaoTexto };
             }
+            saveAlunos();
+            renderTabela();
             document.body.classList.add('mode-mass');
             window.print();
         }
@@ -2208,9 +2568,22 @@
             const rawProf = localStorage.getItem(PROF_STORAGE_KEY);
             const prof = rawProf ? JSON.parse(rawProf) : null;
 
+            const nome = document.getElementById('in_nome').value.trim();
+            if (!nome) {
+                alert('Indique o nome do aluno antes de guardar no cadastro.');
+                return;
+            }
+
+            const duplicado = encontrarPossivelDuplicado(nome, null);
+            if (duplicado) {
+                const continuar = confirm(`Já existe um aluno com nome semelhante cadastrado:\n"${duplicado.nome}" (${duplicado.classe || '--'}, ${duplicado.ano || '--'})\n\nDeseja continuar e guardar mesmo assim?`);
+                if (!continuar) return;
+            }
+
+            const agora = new Date().toISOString();
             const dados = {
                 id: gerarId(),
-                nome: document.getElementById('in_nome').value.trim(),
+                nome: nome,
                 sexo: document.getElementById('in_sexo').value,
                 data_nasc: document.getElementById('in_data_nasc').value.trim(),
                 naturalidade: document.getElementById('in_naturalidade').value.trim(),
@@ -2230,13 +2603,10 @@
                 extraido: document.getElementById('in_extraido').value.trim() || (prof ? prof.nome : ''),
                 conferido: document.getElementById('in_conferido').value.trim(),
                 directora: document.getElementById('in_directora').value.trim(),
-                carreira_directora: document.getElementById('in_carreira_directora').value.trim()
+                carreira_directora: document.getElementById('in_carreira_directora').value.trim(),
+                criado_em: agora,
+                atualizado_em: agora
             };
-
-            if (!dados.nome) {
-                alert('Indique o nome do aluno antes de guardar no cadastro.');
-                return;
-            }
 
             alunos.push(dados);
             saveAlunos();
