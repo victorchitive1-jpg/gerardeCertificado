@@ -245,6 +245,31 @@
             margin-bottom: 18px;
         }
 
+        .filtro-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            gap: 15px;
+            background: #f7f9fc;
+            border: 1px solid #dde3ec;
+            border-radius: 8px;
+            padding: 14px 15px;
+            margin-bottom: 15px;
+        }
+
+        .filtro-toolbar .form-group {
+            min-width: 180px;
+            margin-bottom: 0;
+        }
+
+        .filtro-toolbar .filtro-contador {
+            font-family: Arial, sans-serif;
+            font-size: 13px;
+            color: #444;
+            margin-left: auto;
+            align-self: center;
+        }
+
         .form-cadastro-panel {
             background: #f7f9fc;
             border: 1px solid #dde3ec;
@@ -661,6 +686,23 @@
                     <button type="button" class="btn btn-secondary" onclick="fecharFormCadastro()">Cancelar</button>
                     <button type="button" class="btn btn-primary" onclick="salvarAluno()">💾 Guardar Aluno</button>
                 </div>
+            </div>
+
+            <div class="filtro-toolbar">
+                <div class="form-group">
+                    <label>Filtrar por Ano Lectivo</label>
+                    <select id="filtroAno" onchange="renderTabela()">
+                        <option value="">Todos os Anos</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Filtrar por Classe</label>
+                    <select id="filtroClasse" onchange="renderTabela()">
+                        <option value="">Todas as Classes</option>
+                    </select>
+                </div>
+                <button type="button" class="btn btn-secondary" onclick="limparFiltrosCadastro()">✖️ Limpar Filtros</button>
+                <span class="filtro-contador" id="filtroContador"></span>
             </div>
 
             <p class="selecao-info">Desmarque a caixa para excluir o aluno da impressão em massa.</p>
@@ -1514,14 +1556,81 @@
             return qtd > 0 ? Math.round(soma / qtd) : 0;
         }
 
+        function popularFiltrosCadastro() {
+            const selAno = document.getElementById('filtroAno');
+            const selClasse = document.getElementById('filtroClasse');
+            if (!selAno || !selClasse) return;
+
+            const anos = [...new Set(alunos.map(a => (a.ano || '').trim()).filter(Boolean))]
+                .sort((a, b) => b.localeCompare(a, undefined, { numeric: true }));
+            const classes = [...new Set(alunos.map(a => (a.classe || '').trim()).filter(Boolean))]
+                .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+
+            const vAno = selAno.value;
+            selAno.innerHTML = '<option value="">Todos os Anos</option>' +
+                anos.map(a => `<option value="${escapeHtml(a)}">${escapeHtml(a)}</option>`).join('');
+            selAno.value = anos.includes(vAno) ? vAno : '';
+
+            const vClasse = selClasse.value;
+            selClasse.innerHTML = '<option value="">Todas as Classes</option>' +
+                classes.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+            selClasse.value = classes.includes(vClasse) ? vClasse : '';
+        }
+
+        function getAlunosFiltrados() {
+            const selAno = document.getElementById('filtroAno');
+            const selClasse = document.getElementById('filtroClasse');
+            const filtroAno = selAno ? selAno.value : '';
+            const filtroClasse = selClasse ? selClasse.value : '';
+
+            return alunos.filter(a => {
+                const okAno = !filtroAno || (a.ano || '').trim() === filtroAno;
+                const okClasse = !filtroClasse || (a.classe || '').trim() === filtroClasse;
+                return okAno && okClasse;
+            });
+        }
+
+        function limparFiltrosCadastro() {
+            const selAno = document.getElementById('filtroAno');
+            const selClasse = document.getElementById('filtroClasse');
+            if (selAno) selAno.value = '';
+            if (selClasse) selClasse.value = '';
+            renderTabela();
+        }
+
         function renderTabela() {
+            popularFiltrosCadastro();
+            const listaFiltrada = getAlunosFiltrados();
+
             const tbody = document.getElementById('tabelaAlunosBody');
             tbody.innerHTML = '';
-            document.getElementById('cadastroVazio').style.display = alunos.length ? 'none' : 'block';
-            document.querySelector('.tabela-wrapper').style.display = alunos.length ? 'block' : 'none';
-            document.querySelector('.selecao-info').style.display = alunos.length ? 'block' : 'none';
 
-            alunos.forEach((a, index) => {
+            const cadastroVazioEl = document.getElementById('cadastroVazio');
+            const wrapperEl = document.querySelector('.tabela-wrapper');
+            const selecaoInfoEl = document.querySelector('.selecao-info');
+            const contadorEl = document.getElementById('filtroContador');
+
+            if (!alunos.length) {
+                cadastroVazioEl.textContent = 'Nenhum aluno cadastrado ainda. Arraste uma planilha Excel para aqui ou clique em "➕ Novo Aluno".';
+                cadastroVazioEl.style.display = 'block';
+                wrapperEl.style.display = 'none';
+                selecaoInfoEl.style.display = 'none';
+            } else if (!listaFiltrada.length) {
+                cadastroVazioEl.textContent = 'Nenhum aluno encontrado para os filtros seleccionados.';
+                cadastroVazioEl.style.display = 'block';
+                wrapperEl.style.display = 'none';
+                selecaoInfoEl.style.display = 'none';
+            } else {
+                cadastroVazioEl.style.display = 'none';
+                wrapperEl.style.display = 'block';
+                selecaoInfoEl.style.display = 'block';
+            }
+
+            if (contadorEl) {
+                contadorEl.textContent = alunos.length ? `A mostrar ${listaFiltrada.length} de ${alunos.length} aluno(s)` : '';
+            }
+
+            listaFiltrada.forEach((a, index) => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td><input type="checkbox" class="rowCheck" data-id="${a.id}" checked></td>
